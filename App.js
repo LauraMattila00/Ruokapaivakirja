@@ -4,6 +4,7 @@ import WeightControl from './components/WeightControl.js'
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Tab = createBottomTabNavigator();
 
@@ -11,9 +12,30 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="FoodDiary" component={FoodDiary} />
-        <Tab.Screen name="WeightControl" component={WeightControl} />
+        <Tab.Screen 
+          name="Etusivu" 
+          component={Home}
+          options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={size} />
+          ),
+        }}  />
+        <Tab.Screen 
+          name="Ruokapäiväkirja" 
+          component={FoodDiary} 
+          options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="playlist-edit" color={color} size={size} />
+          ),
+        }} />
+        <Tab.Screen 
+          name="Painonhallinta" 
+          component={WeightControl}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="chart-line" color={color} size={size} />
+            ),
+          }} />
       </Tab.Navigator>
     </NavigationContainer>
   );
