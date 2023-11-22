@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
-import DatePicker, {getToday, getFormatedDate } from 'react-native-modern-datepicker'
+import DatePicker, { getToday, getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -10,7 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 export default FoodDiary = () => {
 
-    const [selectedDate, setSelectedDate] = useState(getToday())
+    const [selectedDate, setSelectedDate] = useState(new Date())
     const [open, setOpen] = useState(false)
 
     const openCalendar = () => {
@@ -18,7 +18,8 @@ export default FoodDiary = () => {
     }
 
     const handleChange = (propDate) => {
-        setSelectedDate(new Date(propDate))
+        const [year, month, date] = propDate.split("/")
+        setSelectedDate(new Date(year, month - 1, date))
         setOpen(!open)
     }
 
@@ -30,40 +31,39 @@ export default FoodDiary = () => {
 
     const previousDay = () => {
         const oneDayInMilliseconds = 1000 * 60 * 60 * 24
-        setSelectedDate(new Date(selectedDate.getTime()) - oneDayInMilliseconds)
+        setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
     }
 
 
     return (
         <View style={styles.container}>
-                <View style={styles.pressables}>
-                    <Pressable onPress={previousDay} style={styles.pressable}>
-                        <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
-                    </Pressable>
-                    <Pressable onPress={openCalendar} style={styles.pressable}>
-                        <Text style={styles.boldText}>{selectedDate}</Text>
-                    </Pressable>
-                    <Pressable onPress={nextDay} style={styles.pressable}>
-                        <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
-                    </Pressable>
-                </View>
+            <View style={styles.pressables}>
+                <Pressable onPress={previousDay} style={styles.pressable}>
+                    <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
+                </Pressable>
+                <Pressable onPress={openCalendar} style={styles.pressable}>
+                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "YYYY/MM/DD")}</Text>
+                </Pressable>
+                <Pressable onPress={nextDay} style={styles.pressable}>
+                    <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
+                </Pressable>
+            </View>
 
 
-                <Modal animationType="slide" transparent={true} visible={open}>
-                    <View style={styles.centeredView}>
-                        <View style={styles.modalView}>
-                            <DatePicker
-                                mode="calendar"
-                                selected={selectedDate}
-                                onDateChange={handleChange}
-                            />
-                            <Pressable onPress={openCalendar} style={styles.pressable}>
-                                <Text>Close</Text>
-                            </Pressable>
-                        </View>
+            <Modal animationType="slide" transparent={true} visible={open}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <DatePicker
+                            mode="calendar"
+                            selected={getFormatedDate(selectedDate, "YYYY/MM/DD")}
+                            onDateChange={handleChange}
+                        />
+                        <Pressable onPress={openCalendar} style={styles.pressable}>
+                            <Text>Close</Text>
+                        </Pressable>
                     </View>
-                </Modal>
-
+                </View>
+            </Modal>
 
             <DataTable>
                 <DataTable.Header><DataTable.Title>Aamiainen</DataTable.Title></DataTable.Header>
@@ -112,7 +112,7 @@ export default FoodDiary = () => {
                     </DataTable.Cell>
                 </DataTable.Row>
             </DataTable>
-            
+
         </View>
         // TAULUKKO LOPPUU
     )
