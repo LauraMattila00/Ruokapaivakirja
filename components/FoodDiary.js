@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Text, View, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
 import DatePicker, { getToday, getFormatedDate } from 'react-native-modern-datepicker'
 import SimpleLineIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AddFood from "./AddFood";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
@@ -49,6 +50,9 @@ const FoodDiary = () => {
                         </View>
                     </View>
                 </Modal>
+                <View>
+                    <AddFood />
+                </View>
             </View>
         )
     }
