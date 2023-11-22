@@ -18,19 +18,21 @@ export default FoodDiary = () => {
     }
 
     const handleChange = (propDate) => {
-        setSelectedDate(new Date(propDate))
+        console.log(new Date(propDate))
+        setSelectedDate(new Date(propDate).toLocaleDateString())
         setOpen(!open)
+
     }
 
     const nextDay = () => {
         const oneDayInMilliseconds = 1000 * 60 * 60 * 24
         const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
-        setSelectedDate(newDate)
+        setSelectedDate(newDate.toLocaleDateString())
     }
 
     const previousDay = () => {
         const oneDayInMilliseconds = 1000 * 60 * 60 * 24
-        setSelectedDate(new Date(selectedDate.getTime()) - oneDayInMilliseconds)
+        setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds).toLocaleDateString())
     }
 
 
