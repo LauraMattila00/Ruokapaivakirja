@@ -21,12 +21,13 @@ export default FoodDiary = () => {
         const [year, month, date] = propDate.split("/")
         setSelectedDate(new Date(year, month - 1, date))
         setOpen(!open)
+
     }
 
     const nextDay = () => {
         const oneDayInMilliseconds = 1000 * 60 * 60 * 24
         const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
-        setSelectedDate(newDate)
+        setSelectedDate(newDate.toLocaleDateString())
     }
 
     const previousDay = () => {
