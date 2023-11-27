@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
-import DatePicker, { getToday, getFormatedDate } from 'react-native-modern-datepicker'
+import DatePicker, { getTime, getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
