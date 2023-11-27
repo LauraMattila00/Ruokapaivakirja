@@ -3,8 +3,8 @@ import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet 
 import DatePicker, { getToday, getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-
-
+import SimpleLineIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AddFood from "./AddFood";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
@@ -63,6 +63,7 @@ export default FoodDiary = () => {
                             <Text>Close</Text>
                         </Pressable>
                     </View>
+
                 </View>
             </Modal>
 
@@ -118,6 +119,15 @@ export default FoodDiary = () => {
         // TAULUKKO LOPPUU
     )
 }
+
+                </Modal>
+                <View>
+                    <AddFood />
+                </View>
+            </View>
+        )
+    }
+
 
 
 
