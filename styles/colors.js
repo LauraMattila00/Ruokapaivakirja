@@ -1,0 +1,1 @@
+export const colors = {primary: 'rgb(245, 104, 10)'}
