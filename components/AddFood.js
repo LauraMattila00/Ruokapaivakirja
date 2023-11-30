@@ -1,15 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
 
-const App = () => {
-
+const AddFood = () => {
     const [filterData, setFilterData] = useState([])
     const [masterData, setMasterData] = useState([])
 
     const [search, setSearch] = useState('')
     const [selectedItem, setSelectedItem] = useState([])
-
 
     useEffect(() => {
         fetchFoods();
@@ -189,4 +186,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default App;
+export default AddFood;
