@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     contentLeft: {
         textAlign: "center",
         alignItems: "center",
-        flexGrow: 0.5
+        flexGrow: 0.5,
     },
     title: {
         fontSize: 30,
@@ -27,16 +27,36 @@ export const styles = StyleSheet.create({
     title2: {
         fontSize: 20,
         color: colors.primary,
-        paddingBottom: 30
+        paddingBottom: 20,
+        paddingTop: 5
+    },
+    title3: {
+        fontSize: 20,
+        color: colors.primary,
+        paddingBottom: 20,
+        paddingTop: 5,
     },
     card: {
         flexDirection: 'row',
         textAlign: "center",
         alignItems: "center",
-        justifyContent:"center"
+        justifyContent: "center",
     },
     icon: {
-        padding: 20,
-        marginRight: 10
+        padding: 5,
+        marginRight: 10,
+        flexDirection: 'column',
+    },
+    bigText: {
+        fontSize: 20,
+        fontWeight: "bold"
+    },
+    text: {
+        fontSize: 15,
+        fontWeight: "bold"
+    },
+    column: {
+        flexGrow: 0.5,
+        flexDirection: 'row'
     }
 })

@@ -120,17 +120,6 @@ export default FoodDiary = () => {
     )
 }
 
-                </Modal>
-                <View>
-                    <AddFood />
-                </View>
-            </View>
-        )
-    }
-
-
-
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
