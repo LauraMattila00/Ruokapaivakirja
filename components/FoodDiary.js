@@ -27,7 +27,7 @@ export default FoodDiary = () => {
     const nextDay = () => {
         const oneDayInMilliseconds = 1000 * 60 * 60 * 24
         const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
-        setSelectedDate(newDate.toLocaleDateString())
+        setSelectedDate(newDate)
     }
 
     const previousDay = () => {
