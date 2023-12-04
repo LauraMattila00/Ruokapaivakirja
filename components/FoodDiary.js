@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
-import DatePicker, { getToday, getFormatedDate } from 'react-native-modern-datepicker'
+import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import SimpleLineIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddFood from "./AddFood";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
@@ -37,7 +36,9 @@ export default FoodDiary = () => {
 
 
     return (
-        <View style={styles.container}>
+
+
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.pressables}>
                 <Pressable onPress={previousDay} style={styles.pressable}>
                     <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
@@ -49,7 +50,6 @@ export default FoodDiary = () => {
                     <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
                 </Pressable>
             </View>
-
 
             <Modal animationType="slide" transparent={true} visible={open}>
                 <View style={styles.centeredView}>
@@ -114,11 +114,15 @@ export default FoodDiary = () => {
                     </DataTable.Cell>
                 </DataTable.Row>
             </DataTable>
+            <View>
+                <AddFood />
+            </View>
+        </ScrollView>
 
-        </View>
-        // TAULUKKO LOPPUU
+
     )
 }
+
 
 const styles = StyleSheet.create({
     container: {
