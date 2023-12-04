@@ -1,9 +1,11 @@
 import { View, Text } from "react-native"
 
-export default WeightControl = () => {
+const WeightControl = () => {
     return (
         <View>
             <Text>MOI</Text>
         </View>
     )
 }
+
+export default WeightControl;
