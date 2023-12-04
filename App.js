@@ -5,16 +5,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import StackNavigator from './components/StackNavigator.js';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  return (
+  return (<>
     <NavigationContainer>
+    
       <Tab.Navigator>
         <Tab.Screen 
           name="Etusivu" 
-          component={Home}
+          component={StackNavigator}
           options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
@@ -38,5 +40,6 @@ export default function App() {
           }} />
       </Tab.Navigator>
     </NavigationContainer>
+    </>
   );
 }
