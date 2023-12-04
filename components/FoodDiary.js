@@ -1,71 +1,23 @@
 import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
-import DatePicker, { getTime, getFormatedDate } from 'react-native-modern-datepicker'
+import CalendarStrip from 'react-native-calendar-strip'
+import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import SimpleLineIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddFood from "./AddFood";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
 export default FoodDiary = () => {
 
-    const [selectedDate, setSelectedDate] = useState(new Date())
-    const [open, setOpen] = useState(false)
-
-    const openCalendar = () => {
-        setOpen(!open)
-    }
-
-    const handleChange = (propDate) => {
-        const [year, month, date] = propDate.split("/")
-        setSelectedDate(new Date(year, month - 1, date))
-        setOpen(!open)
-
-    }
-
-    const nextDay = () => {
-        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
-        const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
-        setSelectedDate(newDate.toLocaleDateString())
-    }
-
-    const previousDay = () => {
-        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
-        setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
-    }
-
 
     return (
-        <View style={styles.container}>
-            <View style={styles.pressables}>
-                <Pressable onPress={previousDay} style={styles.pressable}>
-                    <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
-                </Pressable>
-                <Pressable onPress={openCalendar} style={styles.pressable}>
-                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "YYYY/MM/DD")}</Text>
-                </Pressable>
-                <Pressable onPress={nextDay} style={styles.pressable}>
-                    <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
-                </Pressable>
-            </View>
 
 
-            <Modal animationType="slide" transparent={true} visible={open}>
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <DatePicker
-                            mode="calendar"
-                            selected={getFormatedDate(selectedDate, "YYYY/MM/DD")}
-                            onDateChange={handleChange}
-                        />
-                        <Pressable onPress={openCalendar} style={styles.pressable}>
-                            <Text>Close</Text>
-                        </Pressable>
-                    </View>
-
-                </View>
-            </Modal>
+        <ScrollView contentContainerStyle={styles.container}>
+            <View>
+        <CalendarStrip calendarColor={'#f8d2d2'} scrollable={'true'} scrollerPaging={'true'} style={{height:130, paddingTop: 20, paddingBottom: 10}} />
+        </View>
 
             <DataTable>
                 <DataTable.Header><DataTable.Title>Aamiainen</DataTable.Title></DataTable.Header>
@@ -114,19 +66,14 @@ export default FoodDiary = () => {
                     </DataTable.Cell>
                 </DataTable.Row>
             </DataTable>
+            <View>
+                <AddFood />
+            </View>
+        </ScrollView>
 
-        </View>
-        // TAULUKKO LOPPUU
+
     )
 }
-
-                </Modal>
-                <View>
-                    <AddFood />
-                </View>
-            </View>
-        )
-    }
 
 
 
@@ -135,7 +82,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        alignItems: 'center'
+        //alignItems: 'center'
     },
     centeredView: {
         flex: 1,
@@ -174,3 +121,63 @@ const styles = StyleSheet.create({
         fontSize: 20
     }
 })
+
+/* ALKUPERÄINEN KALENTERI 
+
+ const [selectedDate, setSelectedDate] = useState(new Date())
+    const [open, setOpen] = useState(false)
+
+    const openCalendar = () => {
+        setOpen(!open)
+    }
+
+    const handleChange = (propDate) => {
+        const [year, month, date] = propDate.split("/")
+        setSelectedDate(new Date(year, month - 1, date))
+        setOpen(!open)
+
+    }
+
+    const nextDay = () => {
+        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
+        const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
+        setSelectedDate(newDate.toLocaleDateString())
+    }
+
+    const previousDay = () => {
+        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
+        setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
+    }
+
+    return (
+
+            <View style={styles.pressables}>
+                <Pressable onPress={previousDay} style={styles.pressable}>
+                    <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
+                </Pressable>
+                <Pressable onPress={openCalendar} style={styles.pressable}>
+                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "YYYY/MM/DD")}</Text>
+                </Pressable>
+                <Pressable onPress={nextDay} style={styles.pressable}>
+                    <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
+                </Pressable>
+            </View>
+
+
+            <Modal animationType="slide" transparent={true} visible={open}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <DatePicker
+                            mode="calendar"
+                            selected={getFormatedDate(selectedDate, "YYYY/MM/DD")}
+                            onDateChange={handleChange}
+                        />
+                        <Pressable onPress={openCalendar} style={styles.pressable}>
+                            <Text>Close</Text>
+                        </Pressable>
+                    </View>
+
+                </View>
+            </Modal> 
+)
+*/ 
