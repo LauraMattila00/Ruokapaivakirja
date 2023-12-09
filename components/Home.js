@@ -5,8 +5,30 @@ import { Card } from "react-native-paper"
 import { Link, NavigationContainer } from "@react-navigation/native"
 import AddCalories from './AddCalories.js';
 import WeightControl from "./WeightControl.js"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useState, useEffect } from "react"
 
-const Home = () => {
+const Home = ({navigation}) => {
+
+    const [dailyCalories, setDailyCalories] = useState()
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getCalories()
+        })
+    })
+
+    const getCalories = async () => {
+        try {
+          const calories = await AsyncStorage.getItem('calories');
+             if (calories !== null) {
+            setDailyCalories(calories)
+            }
+        } catch (e) {
+          console.log(e)
+        }
+      };
+
     return (
         <View>
             <Image source={require('../assets/Ruokapaivislogo.png')} />
@@ -19,7 +41,7 @@ const Home = () => {
                         </View>
                         <Card.Content style={styles.card}>
                             <View style={styles.contentLeft}>
-                                <Text style={styles.bigText}>1800</Text>
+                                <Text style={styles.bigText}>{dailyCalories}</Text>
                                 <Text>Remaining</Text>
                             </View>
 
@@ -30,7 +52,7 @@ const Home = () => {
                                     </View>
                                     <View>
                                         <Text>Base goal</Text>
-                                        <Text style={styles.text}>1800</Text>
+                                        <Text style={styles.text}>{dailyCalories}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.column}>

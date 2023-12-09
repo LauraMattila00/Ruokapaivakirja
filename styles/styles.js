@@ -65,6 +65,7 @@ export const styles = StyleSheet.create({
         flexGrow: 0.5,
         flexDirection: 'row'
     },
+
     link: {
         display: 'flex',
         flexGrow: 1,
@@ -73,4 +74,51 @@ export const styles = StyleSheet.create({
     background: {
         backgroundColor: colors.tertiary
     }
+
+    // FOOD DIARY -SIVUN TYYLEJÄ -> 
+    containerFoodDiary: {
+        margin: 20,
+        marginTop: StatusBar.currentHeight + 10,
+        height: '100%',
+        flex: 1,
+        alignItems: 'center'
+    },
+    pressable: {
+        padding: 15,
+        //borderRadius: 50,
+        //borderWidth: 2,
+        //borderColor: colors.primary,
+        margin: 10,
+        justifyContent: 'center'
+    },
+    pressables: {
+        flexDirection: 'row'
+    },
+    boldText: {
+        fontWeight: 'bold',
+        fontSize: 30,
+        color: colors.primary
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        width: '90%',
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
 })

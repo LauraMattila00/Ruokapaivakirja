@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
-import DatePicker, { getToday, getFormatedDate } from 'react-native-modern-datepicker'
+import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import SimpleLineIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddFood from "./AddFood";
+import { styles } from "../styles/styles"
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
@@ -37,26 +37,27 @@ export default FoodDiary = () => {
 
 
     return (
-        <View style={styles.container}>
+
+
+        <ScrollView contentContainerStyle={styles.containerFoodDiary}>
             <View style={styles.pressables}>
                 <Pressable onPress={previousDay} style={styles.pressable}>
                     <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
                 </Pressable>
                 <Pressable onPress={openCalendar} style={styles.pressable}>
-                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "YYYY/MM/DD")}</Text>
+                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "DD.MM.YYYY")}</Text>
                 </Pressable>
                 <Pressable onPress={nextDay} style={styles.pressable}>
                     <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
                 </Pressable>
             </View>
 
-
             <Modal animationType="slide" transparent={true} visible={open}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <DatePicker
                             mode="calendar"
-                            selected={getFormatedDate(selectedDate, "YYYY/MM/DD")}
+                            selected={getFormatedDate(selectedDate, "DD.MM.YYYY")}
                             onDateChange={handleChange}
                         />
                         <Pressable onPress={openCalendar} style={styles.pressable}>
@@ -68,7 +69,10 @@ export default FoodDiary = () => {
             </Modal>
 
             <DataTable>
-                <DataTable.Header><DataTable.Title>Aamiainen</DataTable.Title></DataTable.Header>
+                <DataTable.Header>
+                    <DataTable.Title>Aamiainen</DataTable.Title>
+                    <TouchableOpacity><MaterialCommunityIcons name="plus-circle" size={30} color={'rgb(245, 104, 10)'} /></TouchableOpacity>
+                </DataTable.Header>
                 <DataTable.Row>
                     <DataTable.Cell><Text>Kaurapuuro</Text></DataTable.Cell>
                     <DataTable.Cell><Text>50 g</Text></DataTable.Cell>
@@ -114,52 +118,8 @@ export default FoodDiary = () => {
                     </DataTable.Cell>
                 </DataTable.Row>
             </DataTable>
+        </ScrollView>
 
-        </View>
-        // TAULUKKO LOPPUU
+
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-        alignItems: 'center'
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        width: '90%',
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    pressable: {
-        padding: 15,
-        backgroundColor: 'mistyrose',
-        borderRadius: 30,
-        margin: 10,
-        justifyContent: 'center'
-    },
-    pressables: {
-        flexDirection: 'row'
-    },
-    boldText: {
-        fontWeight: 'bold',
-        fontSize: 20
-    }
-})
