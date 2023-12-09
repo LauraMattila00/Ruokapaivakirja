@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
         margin: 20,
         marginTop: StatusBar.currentHeight + 10,
         //padding: 20,
-        height: '100%'
+        height: '100%',
     },
     contentLeft: {
         textAlign: "center",
@@ -42,10 +42,16 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
+    cardStyle: {
+        margin: 8,
+        backgroundColor: colors.background
+    },
     icon: {
         padding: 5,
         marginRight: 10,
         flexDirection: 'column',
+        color: 'rgb(158, 33, 33)'
+
     },
     bigText: {
         fontSize: 20,
@@ -58,5 +64,13 @@ export const styles = StyleSheet.create({
     column: {
         flexGrow: 0.5,
         flexDirection: 'row'
+    },
+    link: {
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'column'
+    },
+    background: {
+        backgroundColor: colors.tertiary
     }
 })
