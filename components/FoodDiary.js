@@ -7,10 +7,9 @@ import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 
-
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
-export default FoodDiary = () => {
+export default () => {
 
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [open, setOpen] = useState(false)
@@ -76,9 +75,9 @@ export default FoodDiary = () => {
                             <Text>Close</Text>
                         </Pressable>
                     </View>
-                </View>               
-                </Modal>
-        
+                </View>
+            </Modal>
+
             <DataTable>
 
                 <List.Accordion
@@ -146,4 +145,5 @@ export default FoodDiary = () => {
                 </DataTable.Row>
             </DataTable>
         </ScrollView>
-    )}
+    )
+}
