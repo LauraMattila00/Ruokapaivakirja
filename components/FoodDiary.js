@@ -9,6 +9,9 @@ import { styles } from "../styles/styles"
 import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 
+import { styles } from "../styles/styles"
+import { Link } from "@react-navigation/native";
+
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
 export default FoodDiary = () => {
@@ -65,7 +68,6 @@ export default FoodDiary = () => {
                     <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
                 </Pressable>
             </View>
-
             <Modal animationType="slide" transparent={true} visible={open}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
@@ -78,10 +80,8 @@ export default FoodDiary = () => {
                             <Text>Close</Text>
                         </Pressable>
                     </View>
-
-                </View>
+                </View>               
                 </Modal>
-                
                 <View>
                     <AddFood />
                 </View>
