@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal, StyleSheet } from "react-native"
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
-import { DataTable } from "react-native-paper"
+import { DataTable, List, Card } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
+
+import { styles } from "../styles/styles"
+import { Link } from "@react-navigation/native";
+
+import { styles } from "../styles/styles"
+import { Link } from "@react-navigation/native";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
@@ -12,10 +18,22 @@ export default FoodDiary = () => {
 
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [open, setOpen] = useState(false)
+    const [expanded, setExpanded] = useState(true);
+    const [selectedItem, setSelectedItem] = useState([])
+
+
+    const [breakfast, setBreakfast] = useState([]);
+    const [lunch, setLunch] = useState([]);
+    const [dinner, setDinner] = useState([]);
+
+
 
     const openCalendar = () => {
         setOpen(!open)
     }
+    const handlePress = () => {
+        setExpanded(!expanded);
+    };
 
     const handleChange = (propDate) => {
         const [year, month, date] = propDate.split("/")
@@ -38,7 +56,6 @@ export default FoodDiary = () => {
 
     return (
 
-
         <ScrollView contentContainerStyle={styles.containerFoodDiary}>
             <View style={styles.pressables}>
                 <Pressable onPress={previousDay} style={styles.pressable}>
@@ -51,7 +68,6 @@ export default FoodDiary = () => {
                     <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
                 </Pressable>
             </View>
-
             <Modal animationType="slide" transparent={true} visible={open}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
@@ -64,36 +80,60 @@ export default FoodDiary = () => {
                             <Text>Close</Text>
                         </Pressable>
                     </View>
-
+                </View>               
+                </Modal>
+                <View>
+                    <AddFood />
                 </View>
-            </Modal>
-
+        
             <DataTable>
                 <DataTable.Header>
-                    <DataTable.Title>Aamiainen</DataTable.Title>
-                    <TouchableOpacity><MaterialCommunityIcons name="plus-circle" size={30} color={'rgb(245, 104, 10)'} /></TouchableOpacity>
-                </DataTable.Header>
-                <DataTable.Row>
-                    <DataTable.Cell><Text>Kaurapuuro</Text></DataTable.Cell>
-                    <DataTable.Cell><Text>50 g</Text></DataTable.Cell>
-                    <DataTable.Cell>
-                        <TouchableOpacity><MaterialCommunityIcons name="pencil" size={20} /></TouchableOpacity>
-                        <TouchableOpacity><MaterialCommunityIcons name="trash-can-outline" size={20} /></TouchableOpacity>
-                    </DataTable.Cell>
-                </DataTable.Row>
+                    <DataTable.Title><Text>Aamiainen</Text></DataTable.Title></DataTable.Header>
+
+                <List.Accordion
+                    title="Add Food"
+                    left={props => <List.Icon {...props} icon="food" />}
+                    expanded={expanded}
+                    onPress={handlePress}
+                >
+                    <AddFood setBreakfast={setBreakfast} />
+                </List.Accordion>
+                {breakfast.map((item, index) => (
+                    <Text key={index}>{item.name}  - {item.calories} calories</Text>
+                ))}
+
+
+
                 <DataTable.Header><DataTable.Title>Lounas</DataTable.Title></DataTable.Header>
-                <DataTable.Row>
-                    <DataTable.Cell><Text>Lohifilee</Text></DataTable.Cell>
-                    <DataTable.Cell><Text>100 g</Text></DataTable.Cell>
-                    <DataTable.Cell>
-                        <TouchableOpacity><MaterialCommunityIcons name="pencil" size={20} /></TouchableOpacity>
-                        <TouchableOpacity><MaterialCommunityIcons name="trash-can-outline" size={20} /></TouchableOpacity>
-                    </DataTable.Cell>
-                </DataTable.Row>
+
+                <List.Accordion
+                    title="Add Food"
+                    left={props => <List.Icon {...props} icon="food" />}
+                    expanded={expanded}
+                    onPress={handlePress}
+                >
+                    <AddFood setLunch={setLunch} />
+                </List.Accordion>
+                {lunch.map((item, index) => (
+                    <Text key={index}>{item.name} -  {item.calories} calories</Text>
+                ))}
+
                 <DataTable.Header><DataTable.Title>Päivällinen</DataTable.Title></DataTable.Header>
                 <DataTable.Row>
                     <DataTable.Cell><Text>Broilerin filee</Text></DataTable.Cell>
-                    <DataTable.Cell><Text>150 g</Text></DataTable.Cell>
+                    <DataTable.Cell>
+                        <List.Accordion
+                            title="Add Food"
+                            left={props => <List.Icon {...props} icon="food" />}
+                            expanded={expanded}
+                            onPress={handlePress}
+                        >
+                            <AddFood setDinner={setDinner} />
+                        </List.Accordion>
+                        {dinner.map((item, index) => (
+                            <Text key={index}>{item.name}</Text>
+                        ))}
+                    </DataTable.Cell>
                     <DataTable.Cell>
                         <TouchableOpacity><MaterialCommunityIcons name="pencil" size={20} /></TouchableOpacity>
                         <TouchableOpacity><MaterialCommunityIcons name="trash-can-outline" size={20} /></TouchableOpacity>
@@ -119,7 +159,4 @@ export default FoodDiary = () => {
                 </DataTable.Row>
             </DataTable>
         </ScrollView>
-
-
-    )
-}
+    )}
