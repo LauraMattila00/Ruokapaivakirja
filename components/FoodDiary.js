@@ -5,12 +5,8 @@ import { DataTable, List, Card } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
-
-import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 
-import { styles } from "../styles/styles"
-import { Link } from "@react-navigation/native";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
@@ -56,7 +52,7 @@ export default FoodDiary = () => {
 
     return (
 
-        <ScrollView contentContainerStyle={styles.containerFoodDiary}>
+        <ScrollView >
             <View style={styles.pressables}>
                 <Pressable onPress={previousDay} style={styles.pressable}>
                     <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
@@ -82,16 +78,11 @@ export default FoodDiary = () => {
                     </View>
                 </View>               
                 </Modal>
-                <View>
-                    <AddFood />
-                </View>
         
             <DataTable>
-                <DataTable.Header>
-                    <DataTable.Title><Text>Aamiainen</Text></DataTable.Title></DataTable.Header>
 
                 <List.Accordion
-                    title="Add Food"
+                    title="Breakfast"
                     left={props => <List.Icon {...props} icon="food" />}
                     expanded={expanded}
                     onPress={handlePress}
@@ -102,12 +93,8 @@ export default FoodDiary = () => {
                     <Text key={index}>{item.name}  - {item.calories} calories</Text>
                 ))}
 
-
-
-                <DataTable.Header><DataTable.Title>Lounas</DataTable.Title></DataTable.Header>
-
                 <List.Accordion
-                    title="Add Food"
+                    title="Lunch"
                     left={props => <List.Icon {...props} icon="food" />}
                     expanded={expanded}
                     onPress={handlePress}
@@ -123,7 +110,7 @@ export default FoodDiary = () => {
                     <DataTable.Cell><Text>Broilerin filee</Text></DataTable.Cell>
                     <DataTable.Cell>
                         <List.Accordion
-                            title="Add Food"
+                            title="Dinner"
                             left={props => <List.Icon {...props} icon="food" />}
                             expanded={expanded}
                             onPress={handlePress}
