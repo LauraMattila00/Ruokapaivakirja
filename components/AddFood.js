@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import { FlatList, SafeAreaView,StyleSheet, Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet,Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card } from 'react-native-paper';
-const AddFood = ({setBreakfast, setLunch, setDinner}) => {
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+const AddFood = ({ setBreakfast, setLunch, setDinner, setSnacks}) => {
     const [filterData, setFilterData] = useState([])
     const [masterData, setMasterData] = useState([])
 
@@ -11,29 +13,29 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
 
     useEffect(() => {
         const loadFoods = async () => {
-          const storedFoods = await AsyncStorage.getItem('foods');
-          if (storedFoods) {
-            const foods = JSON.parse(storedFoods);
-            setFilterData(foods);
-            setMasterData(foods);
-          }
+            const storedFoods = await AsyncStorage.getItem('foods');
+            if (storedFoods) {
+                const foods = JSON.parse(storedFoods);
+                setFilterData(foods);
+                setMasterData(foods);
+            }
         };
         loadFoods();
         fetchFoods();
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         const loadSelectedItem = async () => {
-          const storedItem = await AsyncStorage.getItem('selectedItem');
-          if (storedItem) {
-            setSelectedItem(JSON.parse(storedItem));
-          }
+            const storedItem = await AsyncStorage.getItem('selectedItem');
+            if (storedItem) {
+                setSelectedItem(JSON.parse(storedItem));
+            }
         };
         loadSelectedItem();
-      }, []);
+    }, []);
 
-      
-    const fetchFoods =  async() => {
+
+    const fetchFoods = async () => {
         const apiKey = 'dGxFQdpsi5C54xpi0VATwLach0DWvX8zWF85Cbd9'; // Replace 'YOUR_API_KEY' with your actual API key
         const apiURL = `https://api.api-ninjas.com/v1/nutrition?query=${search}`;
         fetch(apiURL, {
@@ -47,18 +49,18 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
                 }
                 return response.json();
             })
-           .then((responseJson) => {
-  setFilterData(prevData => {
-    const newData = [...prevData, ...responseJson];
-    AsyncStorage.setItem('foods', JSON.stringify(newData));
-    return newData;
-  });
-  setMasterData(prevData => {
-    const newData = [...prevData, ...responseJson];
-    AsyncStorage.setItem('foods', JSON.stringify(newData));
-    return newData;
-  });
-})
+            .then((responseJson) => {
+                setFilterData(prevData => {
+                    const newData = [...prevData, ...responseJson];
+                    AsyncStorage.setItem('foods', JSON.stringify(newData));
+                    return newData;
+                });
+                setMasterData(prevData => {
+                    const newData = [...prevData, ...responseJson];
+                    AsyncStorage.setItem('foods', JSON.stringify(newData));
+                    return newData;
+                });
+            })
             .catch((error) => {
                 console.error('A network error has occurred: ', error);
             });
@@ -72,17 +74,16 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
                     : ''.toUpperCase();
                 const textData = text.toUpperCase();
                 return itemData.indexOf(textData) > -1;
-                
+
             });
             setFilterData(newData);
             setSearch(text);
         } else {
             setFilterData(masterData)
             setSearch(text);
-            
+
         }
     }
-
     const ItemView = ({ item }) => {
         return (
             <Text>
@@ -97,54 +98,51 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
         )
     }
 
-    const selectItem = async (item, meal) => {
+    const selectItem = async (item) => {
         setSelectedItem(item);
         await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
-        switch(meal) {
-            case 'breakfast':
-                setBreakfast(prevItems => [...prevItems, item]);
-                break;
-            case 'lunch':
-                setLunch(prevItems => [...prevItems, item]);
-                break;
-            case 'dinner':
-                setDinner(prevItems => [...prevItems, item]);
-                break;
-            default:
-                console.log('Invalid meal');
+        if (setBreakfast) {
+            setBreakfast((prevItems) => [...prevItems, item]);
         }
-      };
+        if (setLunch) {
+            setLunch((prevItems) => [...prevItems, item]);
+        }
+        if (setDinner) {
+            setDinner((prevItems) => [...prevItems, item]);
+        }
+        if (setSnacks) {
+            setSnacks((prevItems) => [...prevItems, item]);
+        }
+    }; 
 
-      const inputRef = useRef(null);
+    const inputRef = useRef(null);
 
-      useEffect(() => {
+    useEffect(() => {
         inputRef.current.focus();
-      }, []);
+    }, []);
 
-    
+
     return (
-        
+
         <SafeAreaView style={{ backgroundColor: 'white' }}>
-           
-                <View>
-                    
-                    </View>
-                   
+
             <View >
                 <TextInput
-                     ref={inputRef}
-                     style={styles.textInputStyle}
-                     value={search}
-                     placeholder="Search"
-                     onChangeText={(text) => searchFilter(text)}
-                     //selectioncolor
+                    ref={inputRef}
+                    style={styles.textInputStyle}
+                    value={search}
+                    placeholder="Search"
+                    selectionColor={'black'}
+                    onChangeText={(text) => searchFilter(text)}
+               
                 />
                 <View>
                     <TouchableOpacity style={styles.button}
                         title="Search"
                         onPress={fetchFoods}>
-                            <Text style={styles.buttonText}>Search</Text>
-                        </TouchableOpacity>
+                            <Icon name = "search" size = {20} color = "black" />
+                        <Text style={styles.buttonText}>Search</Text>
+                    </TouchableOpacity>
 
                 </View>
                 <View>
@@ -152,9 +150,11 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
                         data={filterData}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
-                            <TouchableOpacity onPress={async () => {selectItem(item, 'breakfast', 'lunch', 'dinner', 'snack');
-                            await AsyncStorage.setItem('selectedItem', JSON.stringify(item))}}>
-                                <View style ={styles.itemContainer}>
+                            <TouchableOpacity onPress={async () => {
+                                selectItem(item);
+                                await AsyncStorage.setItem('selectedItem', JSON.stringify(item))
+                            }}>
+                                <View style={styles.itemContainer}>
                                     <Text styles={styles.itemText}>{item.name}</Text>
                                 </View>
                             </TouchableOpacity>
@@ -162,19 +162,8 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
                         ItemSeparatorComponent={ItemSeperatorView}
 
                     />
-                   {selectedItem && (
-                        <View>
-                            <Text style={styles.result}>Name: {selectedItem.name}</Text>
-                            <Text style={styles.result}>Calories: {selectedItem.calories}</Text>
-                            
-                        </View>
-                    )}
                 </View>
-               
             </View>
-           
-        
-
         </SafeAreaView>
     )
 }
@@ -182,69 +171,76 @@ const AddFood = ({setBreakfast, setLunch, setDinner}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      },
-
-  
+        justifyContent: 'center'
+    },
     ItemStyle: {
         padding: 20,
-        
     },
-
     textInputStyle: {
-        borderColor: "#070707",
+        borderColor: "#F5680A",
         width: "80%",
         borderWidth: 1,
         borderRadius: 10,
         padding: 10,
         color: 'black',
-        fontSize: 16, // Increase this value to make the text and cursor larger
+        fontSize: 16,
         fontWeight: 'bold',
         backgroundColor: 'white',
-       
+        elevation: 5,
     },
     button: {
-        backgroundColor: "#42a5f5", // Change the background color
-        padding: 10, 
-        margin:10, 
-        flex:1,// Change the padding
-        borderRadius: 5, // Change the border radius
-        elevation: 5, // Change the elevation
-        justifyContent: "center", // Change the alignment along the y-axis
-        alignItems: "center", // Change the alignment along the x-axis
-        width: "70%", // Change the width
-        fontSize: 18, // Change the font size
-        paddingTop: 10,
-      },
-      buttonText: {
-        color: 'black', // Change the text color
-        fontSize: 15, // Change the text size
-        fontWeight: 'bold', // Change the text weight
-      },
+        backgroundColor: "#F5680A",
+        margin: 10,
+        borderRadius: 10,
+        elevation: 5,
+        justifyContent: "center",
+        alignItems: "center",
+        width: "40%",
+        fontSize: 18,
+        padding: 10,
+        elevation: 5,
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+    },
+    buttonText: {
+        color: 'black',
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
     result: {
         fontFamily: 'Roboto',
         fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
-        
     },
     cardContainer: {
         margin: 16,
         borderRadius: 8,
-        elevation: 4},
- itemContainer: {
-            padding: 20, // Increase the padding
-            marginVertical: 10, // Add some vertical margin
-            backgroundColor: '#f8f8f8', // Add a background color
-            borderRadius: 10, // Add some border radius
-          },
-          itemText: {
-            fontSize: 20, // Increase the font size
-            color: 'black', // Change the text color
-          },
+        elevation: 4
+    },
+    itemContainer: {
+        padding: 20,
+        marginVertical: 10,
+        backgroundColor: '#f8f8f8',
+        borderRadius: 10,
+    },
+    itemText: {
+        fontSize: 20,
+        color: 'black',
+    },
 
 })
 
 
 export default AddFood;
+
+/*<Text style={styles.result}>Calories: {selectedItem.calories}</Text>
+                            <Text style={styles.result}>Protein: {selectedItem.protein_g}</Text>
+                            <Text style={styles.result}>Carbohydrates: {selectedItem.carbohydrates_total_g}</Text>
+                            <Text style={styles.result}>Fat: {selectedItem.fat_total_g}</Text>
+                            <Text style={styles.result}>Saturated Fat: {selectedItem.fat_saturated_g}</Text>
+                            <Text style={styles.result}>Fiber: {selectedItem.fiber_g}</Text>
+                            <Text style={styles.result}>Sugar: {selectedItem.sugar_g}</Text>
+                            <Text style={styles.result}>Sodium: {selectedItem.sodium_mg}</Text>
+                            <Text style={styles.result}>Potassium: {selectedItem.potassium_mg}</Text>*/
