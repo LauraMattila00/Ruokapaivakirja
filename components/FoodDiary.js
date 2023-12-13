@@ -37,6 +37,8 @@ export default () => {
     const totalCalories = breakfastCalories + lunchCalories +
         dinnerCalories;
     // + supperCalories + snacksCalories;
+    
+
     const [snacks, setSnacks] = useState([]);
 
     const [breakfastIconColor, setBreakfastIconColor] = useState('green');
