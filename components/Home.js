@@ -59,7 +59,7 @@ const Home = ({ navigation }) => {
     return (
         <ScrollView style={styles.background}>
             <View style={{ height: 300 }}>
-                <Logo style={{height: 300}} />
+                <Logo style={{ height: 300 }} />
             </View>
             <Text style={styles.title} >Today</Text>
             <Card style={styles.cardStyle} onPress={() => navigation.navigate('AddCalories')}>
