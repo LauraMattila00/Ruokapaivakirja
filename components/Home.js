@@ -107,7 +107,9 @@ const Home = ({ navigation }) => {
                 <Link to={{ screen: 'WeightControl' }}>
                     <Card.Title titleStyle={styles.title2} title="Weight" />
                     <Card.Content style={styles.card}>
+                        <View>
 
+                        </View>
                     </Card.Content>
                 </Link>
             </Card>
