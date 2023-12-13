@@ -121,4 +121,10 @@ export const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5
     },
+    savedContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        backgroundColor: colors.background
+    },
 })
