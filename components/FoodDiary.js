@@ -18,8 +18,22 @@ export default () => {
 
 
     const [breakfast, setBreakfast] = useState([]);
+    const breakfastCalories = breakfast.reduce((total, currentValue) =>
+        total + currentValue.calories, 0).toFixed(0);
     const [lunch, setLunch] = useState([]);
+    const lunchCalories = lunch.reduce((total, currentValue) =>
+        total + currentValue.calories, 0);
     const [dinner, setDinner] = useState([]);
+    const dinnerCalories = dinner.reduce((total, currentValue) =>
+        total + currentValue.calories, 0)
+    /* const supperCalories = supper.reduce((total, currentValue) =>
+        total + currentValue.supper, 0);
+    const snacksCalories = snacks.reduce((total, currentValue) =>
+        total + currentValue.snacks, 0); */
+
+    const totalCalories = breakfastCalories + lunchCalories +
+        dinnerCalories;
+    // + supperCalories + snacksCalories;
 
 
 
@@ -47,6 +61,26 @@ export default () => {
         const oneDayInMilliseconds = 1000 * 60 * 60 * 24
         setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
     }
+
+    const onClick = (item, meal) => {
+        // setSelectedItem(item);
+        // await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
+        switch (meal) {
+            case 'breakfast':
+                setBreakfast(prevItems => [...prevItems, item]);
+                break;
+            case 'lunch':
+                setLunch(prevItems => [...prevItems, item]);
+                break;
+            case 'dinner':
+                setDinner(prevItems => [...prevItems, item]);
+                break;
+            default:
+                console.log('Invalid meal');
+        }
+    }
+
+    console.log(lunch)
 
 
     return (
@@ -78,27 +112,31 @@ export default () => {
                 </View>
             </Modal>
 
+            <View>
+                <Text style={styles.title3}>Total calories of the day: {totalCalories}</Text>
+            </View>
+
             <DataTable>
 
                 <List.Accordion
-                    title="Breakfast"
+                    title={"Breakfast" + " " + breakfastCalories + " kCal"}
                     left={props => <List.Icon {...props} icon="food" />}
                     expanded={expanded}
                     onPress={handlePress}
                 >
-                    <AddFood setBreakfast={setBreakfast} />
+                    <AddFood onClick={onClick} meal="breakfast" />
                 </List.Accordion>
                 {breakfast.map((item, index) => (
                     <Text key={index}>{item.name}  - {item.calories} calories</Text>
                 ))}
 
                 <List.Accordion
-                    title="Lunch"
+                    title={"Lunch" + " " + lunchCalories + " kCal"}
                     left={props => <List.Icon {...props} icon="food" />}
                     expanded={expanded}
                     onPress={handlePress}
                 >
-                    <AddFood setLunch={setLunch} />
+                    <AddFood onClick={onClick} meal="lunch" />
                 </List.Accordion>
                 {lunch.map((item, index) => (
                     <Text key={index}>{item.name} -  {item.calories} calories</Text>
