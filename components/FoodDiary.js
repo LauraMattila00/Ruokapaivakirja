@@ -5,11 +5,6 @@ import { DataTable, List, Card } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
-
-import { styles } from "../styles/styles"
-import { Link } from "@react-navigation/native";
-
-import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
