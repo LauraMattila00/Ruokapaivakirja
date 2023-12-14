@@ -13,6 +13,7 @@ export default () => {
 
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [open, setOpen] = useState(false)
+    const [expanded, setExpanded] = useState(true)
     const [selectedItem, setSelectedItem] = useState([])
    // Add food diary osa
     const [breakfastExpanded, setBreakfastExpanded] = useState(false);

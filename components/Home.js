@@ -41,7 +41,7 @@ const Home = ({ navigation }) => {
                 <Card.Title titleStyle={styles.title3} title="Calories" />
                 <Card.Content style={styles.card}>
                     <View style={styles.contentLeft}>
-                        <Text style={styles.bigText}>1800</Text>
+                        <Text style={styles.bigText}>{dailyCalories}</Text>
                         <Text>Remaining</Text>
                     </View>
                     <View style={{ flexGrow: 0.5 }}>
@@ -52,7 +52,7 @@ const Home = ({ navigation }) => {
                             </View>
                             <View>
                                 <Text>Base goal</Text>
-                                <Text style={styles.text}>1800</Text>
+                                <Text style={styles.text}>{dailyCalories}</Text>
                             </View>
                         </View>
                         <View style={styles.column}>
