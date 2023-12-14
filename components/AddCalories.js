@@ -10,10 +10,10 @@ const AddCalories = ({navigation}) => {
 
     const [calories, setCalories] = useState()
 
-    const dailyCalories = async (calories) => {
+    const dailyCalories = async () => {
         try {
           await AsyncStorage.setItem('calories', calories);
-          navigation.navigate('Home')
+          navigation.navigate('MainPage')
         } catch (e) {
             console.log(e)
         }
@@ -22,8 +22,8 @@ const AddCalories = ({navigation}) => {
     return (
         <View>
             <Text>Insert your daily energy goal here (kCal)</Text>
-            <TextInput onChangeText={setCalories}></TextInput>
-            <Pressable onPress={() => dailyCalories(calories)}><Text>Ok</Text></Pressable>
+            <TextInput keyboardType="numeric" onChangeText={setCalories}></TextInput>
+            <Pressable onPress={() => dailyCalories(calories)}><Text>OK</Text></Pressable>
         </View>
 
     )
