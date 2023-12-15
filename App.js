@@ -6,40 +6,41 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import StackNavigator from './components/StackNavigator.js';
+import { colors } from './styles/colors.js';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (<>
     <NavigationContainer>
-    
+
       <Tab.Navigator>
-        <Tab.Screen 
-          name="Etusivu" 
+        <Tab.Screen
+          name="Home"
           component={StackNavigator}
           options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
-          ),
-        }}  />
-        <Tab.Screen 
-          name="Ruokapäiväkirja" 
-          component={FoodDiary} 
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="home" color={colors.secondary} size={size} />
+            ),
+          }} />
+        <Tab.Screen
+          name="Food Diary"
+          component={FoodDiary}
           options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="playlist-edit" color={color} size={size} />
-          ),
-        }} />
-        <Tab.Screen 
-          name="Painonhallinta" 
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="playlist-edit" color={colors.secondary} size={size} />
+            ),
+          }} />
+        <Tab.Screen
+          name="Weight Control"
           component={WeightControl}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="chart-line" color={color} size={size} />
+              <MaterialCommunityIcons name="chart-line" color={colors.secondary} size={size} />
             ),
           }} />
       </Tab.Navigator>
     </NavigationContainer>
-    </>
+  </>
   );
 }
