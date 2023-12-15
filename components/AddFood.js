@@ -65,17 +65,15 @@ const AddFood = ({onClick, meal}) => {
                 return response.json();
             })
             .then((responseJson) => {
-                setFilterData(prevData => {
-                    const newData = [...prevData, ...responseJson];
-                    // AsyncStorage.setItem('foods', JSON.stringify(newData));
-                    return newData;
-                });
+                setFilterData(responseJson);
+                    
+                })
                 /*                 setMasterData(prevData => {
                                     const newData = [...prevData, ...responseJson];
                                     // AsyncStorage.setItem('foods', JSON.stringify(newData));
                                     return newData;
                                 }); */
-            })
+            
             .catch((error) => {
                 console.error('A network error has occurred: ', error);
             });
@@ -180,13 +178,15 @@ const AddFood = ({onClick, meal}) => {
                     ItemSeparatorComponent={ItemSeperatorView}
 
                 />
-                {selectedItem && (
-                    <View>
-                        <Text style={styles.result}>Name: {selectedItem.name}</Text>
+                {/*{selectedItem && (
+                   <View>
+                       <Text style={styles.result}>Name: {selectedItem.name}</Text>
                         <Text style={styles.result}>Calories: {selectedItem.calories}</Text>
-
+                        
                     </View>
-                )}
+                    )}
+                    */} 
+                
             </SafeAreaView>
         </SafeAreaView>
     )
