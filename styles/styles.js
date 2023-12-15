@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
     },
     background: {
         backgroundColor: colors.tertiary
-    }
+    },
 
     // FOOD DIARY -SIVUN TYYLEJÄ -> 
     containerFoodDiary: {
