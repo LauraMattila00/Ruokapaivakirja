@@ -7,6 +7,7 @@ import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 
+
 // HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
 export default () => {
@@ -14,11 +15,12 @@ export default () => {
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [open, setOpen] = useState(false)
     const [selectedItem, setSelectedItem] = useState([])
-   // Add food diary osa
+    // Add food diary osa
     const [breakfastExpanded, setBreakfastExpanded] = useState(false);
     const [lunchExpanded, setLunchExpanded] = useState(false);
     const [dinnerExpanded, setDinnerExpanded] = useState(false);
     const [snacksExpanded, setSnacksExpanded] = useState(false);
+    const [supperExpanded, setSupperExpanded] = useState(false);
 
     const [breakfast, setBreakfast] = useState([]);
     const breakfastCalories = breakfast.reduce((total, currentValue) =>
@@ -37,16 +39,18 @@ export default () => {
     const totalCalories = breakfastCalories + lunchCalories +
         dinnerCalories;
     // + supperCalories + snacksCalories;
-    
+
 
     const [snacks, setSnacks] = useState([]);
+    const [supper, setSupper] = useState([]);
 
     const [breakfastIconColor, setBreakfastIconColor] = useState('green');
     const [lunchIconColor, setLunchIconColor] = useState('green');
     const [dinnerIconColor, setDinnerIconColor] = useState('green');
     const [snacksIconColor, setSnacksIconColor] = useState('green');
+    const [supperIconColor, setSupperIconColor] = useState('green');
 
-   
+
     const handlePress = () => {
         setExpanded(!expanded);
     };
@@ -72,6 +76,10 @@ export default () => {
                     return prevSnacks.filter((item, i) => i !== index);
                 });
                 break;
+            case 'supper':
+                setSupper((prevSupper) => {
+                    return prevSupper.filter((item, i) => i !== index);
+                });
             default:
                 break;
         }
@@ -108,6 +116,12 @@ export default () => {
                 break;
             case 'dinner':
                 setDinner(prevItems => [...prevItems, item]);
+                break;
+            case 'snacks':
+                setSnacks(prevItems => [...prevItems, item]);
+                break;
+            case 'supper':
+                setSupper(prevItems => [...prevItems, item]);
                 break;
             default:
                 console.log('Invalid meal');
@@ -153,8 +167,13 @@ export default () => {
                 <List.Accordion
                     title={"Breakfast" + " " + breakfastCalories + " kCal"}
                     left={props => <List.Icon {...props} icon="food" />}
-                    expanded={expanded}
-                    onPress={handlePress}
+                    expanded={breakfastExpanded}
+                    onPress={() => {
+                        const newExpandedState = !breakfastExpanded;
+                        setBreakfastExpanded(newExpandedState);
+                        setBreakfastIconColor(newExpandedState ? 'green' : '#F49379');
+                    }}
+                    style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}
                 >
                     <AddFood onClick={onClick} meal="breakfast" />
                 </List.Accordion>
@@ -170,7 +189,7 @@ export default () => {
                             <Text>Fiber: {item.fiber_g}</Text>
                             <Text>Sugar: {item.sugar_g}</Text>
                             <Text>serving:{item.serving_size_g}</Text>
-                            <Button title="Delete" onPress={() =>deleteFoodItem('breakfast', index)} />
+                            <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
                         </View>
                     ))}
                 </View>
@@ -210,7 +229,7 @@ export default () => {
                     }}
                     style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}
                 >
-                    <AddFood setDinner={setDinner} />
+                    <AddFood onClick={onClick} meal="dinner" />
                 </List.Accordion>
                 {dinner.map((item, index) => (
                     <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
@@ -221,7 +240,7 @@ export default () => {
                         <Text>Fat: {item.fat_total_g}</Text>
                         <Text>Saturated Fat: {item.fat_saturated_g}</Text>
                         <Text>Sugar: {item.sugar_g}</Text>
-                        
+
                         <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
                     </View>
                 ))}
@@ -235,7 +254,7 @@ export default () => {
                         setSnacksExpanded(newExpandedState);
                         setSnacksIconColor(newExpandedState ? 'green' : '#F49379');
                     }} style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}>
-                    <AddFood setSnacks={setSnacks} />
+                    <AddFood onClick={onClick} meal="snacks" />
                 </List.Accordion>
                 {snacks.map((item, index) => (
                     <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
@@ -246,7 +265,30 @@ export default () => {
                         <Text>Fat: {item.fat_total_g}</Text>
                         <Text>Saturated Fat: {item.fat_saturated_g}</Text>
                         <Text>Sugar: {item.sugar_g}</Text>
-                        <Button title="Delete" onPress={() => deleteFoodItem( 'snacks', index)} />
+                        <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
+                    </View>
+                ))}
+                <List.Accordion
+                    title="Supper"
+                    left={(props) => <List.Icon {...props} icon="food" color={supperIconColor} />}
+                    expanded={supperExpanded}
+                    onPress={() => {
+                        const newExpandedState = !supperExpanded;
+                        setSupperExpanded(newExpandedState);
+                        setSupperIconColor(newExpandedState ? 'green' : '#F49379');
+                    }} style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}>
+                    <AddFood onClick={onClick} meal="supper" />
+                </List.Accordion>
+                {supper.map((item, index) => (
+                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
+                        <Text>Name: {item.name}</Text>
+                        <Text>Calories: {item.calories}</Text>
+                        <Text>Protein: {item.protein_g}</Text>
+                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                        <Text>Fat: {item.fat_total_g}</Text>
+                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                        <Text>Sugar: {item.sugar_g}</Text>
+                        <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
                     </View>
                 ))}
             </DataTable>

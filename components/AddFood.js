@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const AddFood = ({ setBreakfast, setLunch, setDinner, setSnacks}) => {
+const AddFood = ({onClick, meal}) => {
     const [filterData, setFilterData] = useState([])
     const [masterData, setMasterData] = useState([])
 
@@ -147,8 +147,10 @@ const AddFood = ({ setBreakfast, setLunch, setDinner, setSnacks}) => {
                     ref={inputRef}
                     style={styles.textInputStyle}
                     value={search}
+                    selectionColor={'#F5680A'}
                     placeholder="Search"
                     onChangeText={setSearch}
+                    
                 //selectioncolor
                 />
             </View>
