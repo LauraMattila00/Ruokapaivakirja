@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet } from "react-native"
+import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet, TextInput } from "react-native"
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable, List, Card } from "react-native-paper"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -54,6 +54,16 @@ export default () => {
     const handlePress = () => {
         setExpanded(!expanded);
     };
+
+ 
+
+    const handleSelectItem = (item) => {
+        setSelectedItem(item);
+        setModalVisible(true);
+    };
+
+    //loppuu
+
     const deleteFoodItem = (mealType, index) => {
         switch (mealType) {
             case 'breakfast':
@@ -163,6 +173,10 @@ export default () => {
                 <Text style={styles.title3}>Total calories of the day: {totalCalories}</Text>
             </View>
 
+
+    
+
+
             <DataTable>
                 <List.Accordion
                     title={"Breakfast" + " " + breakfastCalories + " kCal"}
@@ -191,6 +205,7 @@ export default () => {
                             <Text>serving:{item.serving_size_g}</Text>
                             <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
                         </View>
+                        
                     ))}
                 </View>
                 <List.Accordion
