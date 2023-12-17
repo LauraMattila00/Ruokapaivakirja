@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { styles } from '../styles/styles'
 import { colors } from '../styles/colors'
 
-
 const AddFood = ({ onClick, meal }) => {
     const [filterData, setFilterData] = useState([])
     const [masterData, setMasterData] = useState([])
