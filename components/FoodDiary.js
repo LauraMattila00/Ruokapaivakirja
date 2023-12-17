@@ -32,18 +32,17 @@ export default () => {
     const [dinner, setDinner] = useState([]);
     const dinnerCalories = dinner.reduce((total, currentValue) =>
         total + currentValue.calories, 0)
-    /* const supperCalories = supper.reduce((total, currentValue) =>
+    const [supper, setSupper] = useState([]);
+    const supperCalories = supper.reduce((total, currentValue) =>
         total + currentValue.supper, 0);
+    const [snacks, setSnacks] = useState([]);
     const snacksCalories = snacks.reduce((total, currentValue) =>
-        total + currentValue.snacks, 0); */
+        total + currentValue.snacks, 0); 
 
     const totalCalories = breakfastCalories + lunchCalories +
         dinnerCalories;
     // + supperCalories + snacksCalories;
 
-
-    const [snacks, setSnacks] = useState([]);
-    const [supper, setSupper] = useState([]);
 
     const [breakfastIconColor, setBreakfastIconColor] = useState(colors.secondary);
     const [lunchIconColor, setLunchIconColor] = useState(colors.secondary);
@@ -196,7 +195,6 @@ export default () => {
                 <Text style={styles.title3}>Total calories of the day: {totalCalories}</Text>
             </View>
 
-// BREAKFAST
 
             <Card style={styles.mealCard}>
                 <List.Accordion
@@ -234,7 +232,6 @@ export default () => {
                 </List.Accordion>
             </Card>
 
-// LUNCH
 
             <Card style={styles.mealCard}>
                 <List.Accordion
@@ -271,7 +268,6 @@ export default () => {
                 </List.Accordion>
             </Card>
 
-// DINNER
 
             <Card style={styles.mealCard}>
                 <List.Accordion
@@ -281,7 +277,7 @@ export default () => {
                     onPress={() => {
                         const newExpandedState = !dinnerExpanded;
                         setDinnerExpanded(newExpandedState);
-                        setDinnertIconColor(newExpandedState ? colors.primary : colors.secondary);
+                        setDinnerIconColor(newExpandedState ? colors.primary : colors.secondary);
                     }}
                     titleStyle={styles.text}
                     style={styles.cardBackground}
@@ -308,7 +304,6 @@ export default () => {
                 </List.Accordion>
             </Card>
 
-// SNACKS
 
             <Card style={styles.mealCard}>
                 <List.Accordion
@@ -346,11 +341,10 @@ export default () => {
                 </List.Accordion>
             </Card>
 
-// SUPPER
 
             <Card style={styles.mealCard}>
                 <List.Accordion
-                    title={"Supper" + " " + breakfastCalories + " kCal"}
+                    title={"Supper" + " " + supperCalories + " kCal"}
                     left={props => <List.Icon {...props} icon="food" color={supperIconColor} />}
                     expanded={supperExpanded}
                     onPress={() => {
@@ -383,7 +377,6 @@ export default () => {
                 </List.Accordion>
             </Card>
 
-// PIECHART
 
             <Card style={styles.cardStyle}>
                 <Card.Content style={styles.card}>
