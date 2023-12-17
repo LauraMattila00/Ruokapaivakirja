@@ -14,12 +14,14 @@ export default function App() {
   return (<>
     <NavigationContainer>
 
-      <Tab.Navigator>
+      <Tab.Navigator screenOptions={() => ({
+        tabBarActiveTintColor: colors.secondary,
+      })}>
         <Tab.Screen
           name="Home"
           component={StackNavigator}
           options={{
-            tabBarIcon: ({ color, size }) => (
+            tabBarIcon: ({ size }) => (
               <MaterialCommunityIcons name="home" color={colors.secondary} size={size} />
             ),
           }} />
