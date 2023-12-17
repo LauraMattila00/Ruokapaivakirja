@@ -131,6 +131,7 @@ export default () => {
     };
 
     const onClick = (item, meal) => {
+        saveMeal(meal, selectedDate, item)
         // setSelectedItem(item);
         // await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
         switch (meal) {
