@@ -7,7 +7,7 @@ import AddCalories from './AddCalories.js';
 import WeightControl from "./WeightControl.js"
 import { colors } from "../styles/colors.js"
 import { Svg } from 'react-native-svg';
-import Logo from '../assets/logo1.svg';
+import Logo from './Logo.js';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useState, useEffect } from "react";
 import FoodDiary from "./FoodDiary.js";
@@ -20,6 +20,7 @@ const Home = ({ navigation }) => {
     useEffect(() => {
         navigation.addListener('focus', () => {
             getCalories()
+            loadCalories().then(setTotalEatenCalories)
         })
     })
 
@@ -52,21 +53,20 @@ const Home = ({ navigation }) => {
 
     const [totalEatenCalories, setTotalEatenCalories] = useState(0);
 
-    useEffect(() => {
-        loadCalories().then(setTotalEatenCalories)
-    }, [])
-
     return (
         <ScrollView style={styles.background}>
-            <View style={{ height: 300 }}>
-                <Logo style={{ height: 300 }} />
+            <View style={{ padding: 10 }}>
+                <Logo width="100%" height={150} />
             </View>
             <Text style={styles.title} >Today</Text>
             <Card style={styles.cardStyle} onPress={() => navigation.navigate('AddCalories')}>
                 <Card.Title titleStyle={styles.title3} title="Calories" />
                 <Card.Content style={styles.card}>
                     <View style={styles.contentLeft}>
-                        <Text style={styles.bigText}>{dailyCalories - totalEatenCalories}</Text>
+                        <Text style={styles.bigText}>
+                            {dailyCalories - totalEatenCalories < 0
+                                ? "0"
+                                : dailyCalories - totalEatenCalories}</Text>
                         <Text>Remaining</Text>
                     </View>
                     <View style={{ flexGrow: 0.5 }}>
