@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet, TextInput } from "react-native"
+import { useEffect, useState } from "react";
+import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet } from "react-native"
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable, List, Card } from "react-native-paper"
 import { PieChart } from "react-native-gifted-charts";
@@ -8,6 +8,7 @@ import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 import { colors } from '../styles/colors'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default () => {
@@ -24,25 +25,23 @@ export default () => {
     const [supperExpanded, setSupperExpanded] = useState(false);
 
     const [breakfast, setBreakfast] = useState([]);
-    const breakfastCalories = breakfast.reduce((total, currentValue) =>
-        total + currentValue.calories, 0).toFixed(0);
+    const breakfastCalories = Math.ceil(breakfast.reduce((total, currentValue) =>
+        total + currentValue.calories, 0));
     const [lunch, setLunch] = useState([]);
-    const lunchCalories = lunch.reduce((total, currentValue) =>
-        total + currentValue.calories, 0);
+    const lunchCalories = Math.ceil(lunch.reduce((total, currentValue) =>
+        total + currentValue.calories, 0));
     const [dinner, setDinner] = useState([]);
-    const dinnerCalories = dinner.reduce((total, currentValue) =>
-        total + currentValue.calories, 0)
+    const dinnerCalories = Math.ceil(dinner.reduce((total, currentValue) =>
+        total + currentValue.calories, 0));
     const [supper, setSupper] = useState([]);
-    const supperCalories = supper.reduce((total, currentValue) =>
-        total + currentValue.supper, 0);
+    const supperCalories = Math.ceil(supper.reduce((total, currentValue) =>
+        total + currentValue.supper, 0));
     const [snacks, setSnacks] = useState([]);
-    const snacksCalories = snacks.reduce((total, currentValue) =>
-        total + currentValue.snacks, 0); 
+    const snacksCalories = Math.floor(snacks.reduce((total, currentValue) =>
+        total + currentValue.calories, 0));
 
     const totalCalories = breakfastCalories + lunchCalories +
-        dinnerCalories;
-    // + supperCalories + snacksCalories;
-
+        dinnerCalories + snacksCalories + supperCalories;
 
     const [breakfastIconColor, setBreakfastIconColor] = useState(colors.secondary);
     const [lunchIconColor, setLunchIconColor] = useState(colors.secondary);
@@ -50,13 +49,48 @@ export default () => {
     const [snacksIconColor, setSnacksIconColor] = useState(colors.secondary);
     const [supperIconColor, setSupperIconColor] = useState(colors.secondary);
 
+    useEffect(() => {
+        const loadData = async () => {
+            await loadMeal('breakfast', selectedDate).then(items => setBreakfast(items.map(item => item.food)))
+            await loadMeal('lunch', selectedDate).then(items => setLunch(items.map(item => item.food)))
+            await loadMeal('dinner', selectedDate).then(items => setDinner(items.map(item => item.food)))
+            //await loadMeal('supper', selectedDate).then(items => setSupper(items.map(item => item.food)))
+            await loadMeal('snacks', selectedDate).then(items => setSnacks(items.map(item => item.food)))
+        }
+        loadData()
+    }, [selectedDate])
 
+
+    const saveMeal = async (meal, date, food) => {
+        try {
+            //await AsyncStorage.clear()
+            const prevItems = JSON.parse(await AsyncStorage.getItem('foods'))
+            const item = {
+                meal, date: getFormatedDate(date, 'DD.MM.YYYY'), food
+            }
+            await AsyncStorage.setItem('foods', JSON.stringify(prevItems ? [...prevItems, item] : [item]));
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const loadMeal = async (meal, date) => {
+        try {
+            const data = await AsyncStorage.getItem('foods');
+            const json = JSON.parse(data)
+            if (json != null) {
+                return json.filter(item => item.meal === meal && item.date === getFormatedDate(date, "DD.MM.YYYY"))
+            }
+            return [];
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
 
     const handlePress = () => {
         setExpanded(!expanded);
     };
-
- 
 
     const handleSelectItem = (item) => {
         setSelectedItem(item);
@@ -95,8 +129,8 @@ export default () => {
                 break;
         }
     };
-  
-  const onClick = (item, meal) => {
+
+    const onClick = (item, meal) => {
         // setSelectedItem(item);
         // await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
         switch (meal) {
@@ -145,11 +179,11 @@ export default () => {
     // PIE CHART:
 
     const pieData = [
-        { text: 'Protein  ', value: 47, color: '#b0f2b4'},
-        { text: 'Carbs', value: 40, color: '#baf2e9'},
-        { text: 'Fat', value: 16, color: '#bad7f2'},
-        { text: 'Fiber', value: 30, color: '#f2bac9'},
-        { text: 'Sugar', value: 30, color: '#f2e2ba'},
+        { text: 'Protein  ', value: 47, color: '#b0f2b4' },
+        { text: 'Carbs', value: 40, color: '#baf2e9' },
+        { text: 'Fat', value: 16, color: '#bad7f2' },
+        { text: 'Fiber', value: 30, color: '#f2bac9' },
+        { text: 'Sugar', value: 30, color: '#f2e2ba' },
     ];
 
 
@@ -161,7 +195,6 @@ export default () => {
             </View>
         )
     }
-
 
     return (
         <ScrollView style={styles.background} keyboardShouldPersistTaps='handled'>
@@ -192,7 +225,7 @@ export default () => {
             </Modal>
 
             <View style={{ alignItems: 'center', marginTop: 10 }}>
-                <Text style={styles.title3}>Total calories of the day: {totalCalories}</Text>
+                <Text style={styles.title3}>Total calories of the day: {totalCalories} kCal</Text>
             </View>
 
 
@@ -212,23 +245,23 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="breakfast" />
 
-                <View style={styles.savedContainer}>
-                    {breakfast.map((item, index) => (
-                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Calories: {item.calories}</Text>
-                            <Text>Protein: {item.protein_g}</Text>
-                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                            <Text>Fat: {item.fat_total_g}</Text>
-                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                            <Text>Fiber: {item.fiber_g}</Text>
-                            <Text>Sugar: {item.sugar_g}</Text>
-                            <Text>serving:{item.serving_size_g}</Text>
-                            <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
-                        </View>
-                        
-                    ))}
-                </View>
+                    <View style={styles.savedContainer}>
+                        {breakfast.map((item, index) => (
+                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                                <Text>Name: {item.name}</Text>
+                                <Text>Calories: {item.calories}</Text>
+                                <Text>Protein: {item.protein_g}</Text>
+                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                                <Text>Fat: {item.fat_total_g}</Text>
+                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                                <Text>Fiber: {item.fiber_g}</Text>
+                                <Text>Sugar: {item.sugar_g}</Text>
+                                <Text>serving:{item.serving_size_g}</Text>
+                                <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
+                            </View>
+
+                        ))}
+                    </View>
                 </List.Accordion>
             </Card>
 
@@ -249,24 +282,24 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="lunch" />
 
-                <View style={styles.savedContainer}>
-                    {lunch.map((item, index) => (
-                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Calories: {item.calories}</Text>
-                            <Text>Protein: {item.protein_g}</Text>
-                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                            <Text>Fat: {item.fat_total_g}</Text>
-                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                            <Text>Fiber: {item.fiber_g}</Text>
-                            <Text>Sugar: {item.sugar_g}</Text>
-                            <Text>serving:{item.serving_size_g}</Text>
-                            <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
-                        </View>             
-                    ))}
-                </View>
+                    <View style={styles.savedContainer}>
+                        {lunch.map((item, index) => (
+                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                                <Text>Name: {item.name}</Text>
+                                <Text>Calories: {item.calories}</Text>
+                                <Text>Protein: {item.protein_g}</Text>
+                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                                <Text>Fat: {item.fat_total_g}</Text>
+                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                                <Text>Fiber: {item.fiber_g}</Text>
+                                <Text>Sugar: {item.sugar_g}</Text>
+                                <Text>serving:{item.serving_size_g}</Text>
+                                <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
+                            </View>
+                        ))}
+                    </View>
                 </List.Accordion>
-            </Card>
+            </Card >
 
 
             <Card style={styles.mealCard}>
@@ -285,24 +318,24 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="dinner" />
 
-                <View style={styles.savedContainer}>
-                    {dinner.map((item, index) => (
-                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Calories: {item.calories}</Text>
-                            <Text>Protein: {item.protein_g}</Text>
-                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                            <Text>Fat: {item.fat_total_g}</Text>
-                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                            <Text>Fiber: {item.fiber_g}</Text>
-                            <Text>Sugar: {item.sugar_g}</Text>
-                            <Text>serving:{item.serving_size_g}</Text>
-                            <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
-                        </View>                    
-                    ))}
-                </View>
-                </List.Accordion>
-            </Card>
+                    <View style={styles.savedContainer}>
+                        {dinner.map((item, index) => (
+                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                                <Text>Name: {item.name}</Text>
+                                <Text>Calories: {item.calories}</Text>
+                                <Text>Protein: {item.protein_g}</Text>
+                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                                <Text>Fat: {item.fat_total_g}</Text>
+                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                                <Text>Fiber: {item.fiber_g}</Text>
+                                <Text>Sugar: {item.sugar_g}</Text>
+                                <Text>serving:{item.serving_size_g}</Text>
+                                <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
+                            </View>
+                        ))}
+                    </View>
+                </List.Accordion >
+            </Card >
 
 
             <Card style={styles.mealCard}>
@@ -321,23 +354,23 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="snacks" />
 
-                <View style={styles.savedContainer}>
-                    {snacks.map((item, index) => (
-                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Calories: {item.calories}</Text>
-                            <Text>Protein: {item.protein_g}</Text>
-                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                            <Text>Fat: {item.fat_total_g}</Text>
-                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                            <Text>Fiber: {item.fiber_g}</Text>
-                            <Text>Sugar: {item.sugar_g}</Text>
-                            <Text>serving:{item.serving_size_g}</Text>
-                            <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
-                        </View>
-                        
-                    ))}
-                </View>
+                    <View style={styles.savedContainer}>
+                        {snacks.map((item, index) => (
+                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                                <Text>Name: {item.name}</Text>
+                                <Text>Calories: {item.calories}</Text>
+                                <Text>Protein: {item.protein_g}</Text>
+                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                                <Text>Fat: {item.fat_total_g}</Text>
+                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                                <Text>Fiber: {item.fiber_g}</Text>
+                                <Text>Sugar: {item.sugar_g}</Text>
+                                <Text>serving:{item.serving_size_g}</Text>
+                                <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
+                            </View>
+
+                        ))}
+                    </View>
                 </List.Accordion>
             </Card>
 
@@ -358,22 +391,22 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="supper" />
 
-                <View style={styles.savedContainer}>
-                    {breakfast.map((item, index) => (
-                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                            <Text>Name: {item.name}</Text>
-                            <Text>Calories: {item.calories}</Text>
-                            <Text>Protein: {item.protein_g}</Text>
-                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                            <Text>Fat: {item.fat_total_g}</Text>
-                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                            <Text>Fiber: {item.fiber_g}</Text>
-                            <Text>Sugar: {item.sugar_g}</Text>
-                            <Text>serving:{item.serving_size_g}</Text>
-                            <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
-                        </View>          
-                    ))}
-                </View>
+                    <View style={styles.savedContainer}>
+                        {breakfast.map((item, index) => (
+                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                                <Text>Name: {item.name}</Text>
+                                <Text>Calories: {item.calories}</Text>
+                                <Text>Protein: {item.protein_g}</Text>
+                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                                <Text>Fat: {item.fat_total_g}</Text>
+                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                                <Text>Fiber: {item.fiber_g}</Text>
+                                <Text>Sugar: {item.sugar_g}</Text>
+                                <Text>serving:{item.serving_size_g}</Text>
+                                <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
+                            </View>
+                        ))}
+                    </View>
                 </List.Accordion>
             </Card>
 
@@ -393,6 +426,6 @@ export default () => {
                     />
                 </Card.Content>
             </Card>
-        </ScrollView>
+        </ScrollView >
     )
 }
