@@ -8,6 +8,7 @@ import { styles } from '../styles/styles'
 import { colors } from '../styles/colors'
 
 const AddFood = ({ onClick, meal}) => {
+
     const [filterData, setFilterData] = useState([])
     const [masterData, setMasterData] = useState([])
 
@@ -68,17 +69,15 @@ const AddFood = ({ onClick, meal}) => {
                 return response.json();
             })
             .then((responseJson) => {
-                setFilterData(prevData => {
-                    const newData = [...prevData, ...responseJson];
-                    // AsyncStorage.setItem('foods', JSON.stringify(newData));
-                    return newData;
-                });
+                setFilterData(responseJson);
+                    
+                })
                 /*                 setMasterData(prevData => {
                                     const newData = [...prevData, ...responseJson];
                                     // AsyncStorage.setItem('foods', JSON.stringify(newData));
                                     return newData;
                                 }); */
-            })
+            
             .catch((error) => {
                 console.error('A network error has occurred: ', error);
             });
@@ -150,8 +149,10 @@ const AddFood = ({ onClick, meal}) => {
                     ref={inputRef}
                     style={styles.textInputStyle}
                     value={search}
+                    selectionColor={'#F5680A'}
                     placeholder="Search"
                     onChangeText={setSearch}
+                    
                 //selectioncolor
                 />
                 <TouchableOpacity style={styles.button}
@@ -178,6 +179,7 @@ const AddFood = ({ onClick, meal}) => {
                     )}
                     ItemSeparatorComponent={ItemSeperatorView}
                 />
+
                 {selectedItem.length !== 0 &&
                     <DataTable>
                         <DataTable.Row>
@@ -186,6 +188,16 @@ const AddFood = ({ onClick, meal}) => {
                         </DataTable.Row>
                     </DataTable>
                 }
+
+                {/*{selectedItem && (
+                   <View>
+                       <Text style={styles.result}>Name: {selectedItem.name}</Text>
+                        <Text style={styles.result}>Calories: {selectedItem.calories}</Text>
+                        
+                    </View>
+                    )}
+                    */} 
+       
             </SafeAreaView>
         </SafeAreaView>
     )

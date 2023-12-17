@@ -1,37 +1,72 @@
-import { View, Text, StyleSheet, TextInput, Button, FlatList } from "react-native"
-import React, { useState } from 'react';
-//import { NavigationContainer } from '@react-navigation/native';
-//import { createNativeStackNavigator } from '@react-navigation/native-stack'; 
-//import { NavigationContainerProvider, useNavigationContainerRef } from '@react-navigation/native';
+import { View, Text, StyleSheet, TextInput, Button, FlatList, TouchableOpacity, Dimensions } from "react-native"
+import React, { useState, useEffect } from 'react';
 import { LineChart } from 'react-native-chart-kit';
-
+import { Card, Title, Paragraph } from 'react-native-paper';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Tämä sivu Tuomaksella työn alla!
-
-// Github lisäys sekä Branch.
-// Tarvittavat importit ja lataus.
-// Button väri: color='#ffdab9'
-// Sivun Design muutoksia?
-// Linkitys (Home.js) WeightControl?
-
+// slice(-4).map (Näyttää vain 4 tulosta chartissa.)
 
 const WeightControl = () => {
 
+    const screenWidth = Dimensions.get("window").width;  
     const [weights, setWeights] = useState([]);
     const [weightInput, setWeightInput] = useState('');
 
-    const handleAddWeight = () => {
+    useEffect(() => {
+    const retrieveData = async () => {
+      try {
+        const storedWeights = await AsyncStorage.getItem('weights');
+        if (storedWeights !== null) {
+          setWeights(JSON.parse(storedWeights));
+        }
+
+    } catch (error) {
+      console.error('Error retrieving data from AsyncStorage', error);
+    }
+    }
+
+    retrieveData();
+  }, []);
+
+    const handleAddWeight = async () => {
         if (weightInput !== '') {
           const currentDate = new Date().toLocaleDateString();
           const newEntry = { weight: parseFloat(weightInput), date: currentDate };
-          setWeights([...weights, newEntry]);
+          const updatedWeights = [...weights, newEntry];
+          setWeights(updatedWeights);
           setWeightInput('');
+
+          // Saving to AsyncStorage
+          try {
+            await AsyncStorage.setItem('weights', JSON.stringify(updatedWeights));
+            console.log('Data saved succesfully');
+          } catch (error) {
+            console.error('Error saving data: ', error);
+          }  
+          
         }
 
 };
 
 const handleClearChart = () => {
   setWeights([]); // For clearing the chart data.
+
+  // Clear AsyncStorage.
+  AsyncStorage.removeItem('weights');
+};
+
+const handleDeleteWeight = async (index) => {
+  const updatedWeights = [...weights];
+  updatedWeights.splice(index, 1);
+  setWeights(updatedWeights);
+
+  try {
+    await AsyncStorage.setItem('weights', JSON.stringify(updatedWeights));
+    console.log('Data removed succesfully');
+  } catch  (error) {
+    console.error('Error removing data: ', error);
+  }  
 };
 
 const chartData = {
@@ -43,11 +78,10 @@ const chartData = {
   ],
 };
 
-// Colors?
 const chartConfig = {
-  backgroundColor: '#ffdab9',
-  backgroundGradientFrom: '#ffdab9',
-  backgroundGradientTo: '#f8d2d2',
+  backgroundColor: 'rgb(255, 255, 255)',
+  backgroundGradientFrom: 'rgb(244, 147, 121)',
+  backgroundGradientTo: 'rgb(245, 148, 44)',
   decimalPlaces: 1,
   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -68,39 +102,60 @@ return (
                 <TextInput
                   style={styles.input}
                   placeholder="Add Weight"
+                  placeholderTextColor="#000"
                   keyboardType="numeric"
                   value={weightInput}
                   onChangeText={(text) => setWeightInput(text)}
                 />
-                <Button title="Save" onPress={handleAddWeight} color='#ffdab9' />
+                <View style={styles.buttonContainer}>
+                 <TouchableOpacity onPress={handleAddWeight} style={styles.touchableOpacity}>
+                  <Text style={styles.buttonText}>SAVE</Text>
+                 </TouchableOpacity>
+                </View>
               </View>
 
               <View style={styles.buttonContainer}>
-                <Button title="Clear Results" onPress={handleClearChart} color='#ffdab9' />
+               <TouchableOpacity onPress={handleClearChart} style={styles.touchableOpacity}>
+                <Text style={styles.buttonText}>Clear History</Text>
+               </TouchableOpacity>
               </View>
               
               {weights.length > 0 ? (
               <View style= {styles.chartContainer}>
               <LineChart
                 data={chartData}
-                width={370}
-                height={270}
+                width={screenWidth}
+                height={256}
+                verticalLabelRotation={0}
                 chartConfig={chartConfig}
               />
               </View>
               ) : (
-                <Text style={styles.noDataText}>NO SAVED DATA.</Text>
+                <Card style={styles.noDataCard}>
+                  <Card.Content>
+                    <Paragraph style={styles.noDataText}>NO SAVED DATA</Paragraph>
+                  </Card.Content>
+                </Card>
               )}  
 
-              <Text style={styles.header}>Weight History</Text>
+              <View>
+                <Card style={styles.card}>
+                  <Card.Content>
+                    <Title style={styles.header}>Weight History</Title>
+                  </Card.Content>
+                </Card>
+              </View>
 
               <FlatList
                 data={weights}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                   <View style={styles.item}>
                     <Text>{item.date}</Text>
                     <Text>{item.weight} kg</Text>
+                    <TouchableOpacity onPress={() => handleDeleteWeight(index)}>
+                      <Text style={styles.deleteButton}>Remove</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               />
@@ -111,15 +166,15 @@ return (
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
     flex: 1,
-    padding: 20
+    padding: 20,
+    backgroundColor: 'rgb(242, 243, 202)',
   },
 
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
   },
 
   input: {
@@ -129,44 +184,70 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     fontSize: 20,
+    //color: 'rgb(245, 148, 44)'
     
   },
 
-  header: {
-    borderWidth: 1,
-    borderRadius: 5,
+  noDataCard: {
+    margin: 4,
     padding: 10,
     fontSize: 22,
-    fontWeight: 'bold',
     marginBottom: 10,
     marginTop: 10,
-    backgroundColor: 'white',
-    color: 'rgb(245, 104, 10)'
+    backgroundColor: 'rgb(255, 255, 255)',
+
   },
 
+  card: {
+    flexDirection: 'row',
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 4,
+    backgroundColor: 'rgb(255, 255, 255)',
+  },
+
+  header: {
+    padding: 10,
+    fontSize: 22,
+    marginBottom: 10,
+    marginTop: 10,
+    color: 'rgb(245, 148, 44)'
+  },
+  
   item: {
     justifyContent: 'space-between',
     flexDirection: 'row',
-    padding: 10,
-    borderBottomWidth: 2,
+    padding: 15,
+    borderBottomWidth: 1,
   },
 
   buttonContainer: {
-    marginBottom: 10,
+    marginBottom: 0,
+    backgroundColor: 'rgb(245, 148, 44)',
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1
+  },
 
+  buttonText: {
+    color: 'black',
+    textAlign: 'center',
+    fontSize: 20,
   },
 
   chartContainer: {
     borderRadius: 20,
-    overflow: 'hidden'
-
+    borderWidth: 1,
+    overflow: 'hidden',
+    marginBottom: 5,
+    marginTop: 5,
   },
 
   noDataText: {
     fontSize: 20,
     textAlign: 'center',
-    fontWeight: 'bold',
-    color: 'rgb(245, 104, 10)'
+    color: 'rgb(245, 148, 44)'
   }
 
 })

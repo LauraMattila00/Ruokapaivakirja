@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet } from "react-native"
+import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet, TextInput } from "react-native"
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable, List, Card } from "react-native-paper"
-//import PieChart from 'react-native-pie-chart'
 import { PieChart } from "react-native-gifted-charts";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddFood from "./AddFood";
@@ -10,7 +9,6 @@ import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
 import { colors } from '../styles/colors'
 
-// HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
 export default () => {
 
@@ -23,6 +21,7 @@ export default () => {
     const [lunchExpanded, setLunchExpanded] = useState(false);
     const [dinnerExpanded, setDinnerExpanded] = useState(false);
     const [snacksExpanded, setSnacksExpanded] = useState(false);
+    const [supperExpanded, setSupperExpanded] = useState(false);
 
     const [breakfast, setBreakfast] = useState([]);
     const breakfastCalories = breakfast.reduce((total, currentValue) =>
@@ -44,16 +43,29 @@ export default () => {
 
 
     const [snacks, setSnacks] = useState([]);
+    const [supper, setSupper] = useState([]);
 
     const [breakfastIconColor, setBreakfastIconColor] = useState(colors.secondary);
     const [lunchIconColor, setLunchIconColor] = useState(colors.secondary);
     const [dinnerIconColor, setDinnerIconColor] = useState(colors.secondary);
     const [snacksIconColor, setSnacksIconColor] = useState(colors.secondary);
+    const [supperIconColor, setSupperIconColor] = useState(colors.secondary);
+
 
 
     const handlePress = () => {
         setExpanded(!expanded);
     };
+
+ 
+
+    const handleSelectItem = (item) => {
+        setSelectedItem(item);
+        setModalVisible(true);
+    };
+
+    //loppuu
+
     const deleteFoodItem = (mealType, index) => {
         switch (mealType) {
             case 'breakfast':
@@ -76,12 +88,16 @@ export default () => {
                     return prevSnacks.filter((item, i) => i !== index);
                 });
                 break;
+            case 'supper':
+                setSupper((prevSupper) => {
+                    return prevSupper.filter((item, i) => i !== index);
+                });
             default:
                 break;
         }
     };
-
-    const onClick = (item, meal) => {
+  
+  const onClick = (item, meal) => {
         // setSelectedItem(item);
         // await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
         switch (meal) {
@@ -94,11 +110,17 @@ export default () => {
             case 'dinner':
                 setDinner(prevItems => [...prevItems, item]);
                 break;
+            case 'snacks':
+                setSnacks(prevItems => [...prevItems, item]);
+                break;
+            case 'supper':
+                setSupper(prevItems => [...prevItems, item]);
+                break;
             default:
                 console.log('Invalid meal');
         }
     }
-    
+
     //add food diary osa loppuu
 
     // CALENDAR:
@@ -130,6 +152,7 @@ export default () => {
         { text: 'Fiber', value: 30, color: '#f2bac9'},
         { text: 'Sugar', value: 30, color: '#f2e2ba'},
     ];
+
 
     const centerLabel = () => {
         return (
@@ -173,8 +196,9 @@ export default () => {
                 <Text style={styles.title3}>Total calories of the day: {totalCalories}</Text>
             </View>
 
-            <Card style={styles.mealCard}>
+// BREAKFAST
 
+            <Card style={styles.mealCard}>
                 <List.Accordion
                     title={"Breakfast" + " " + breakfastCalories + " kCal"}
                     left={props => <List.Icon {...props} icon="food" color={breakfastIconColor} />}
@@ -182,7 +206,7 @@ export default () => {
                     onPress={() => {
                         const newExpandedState = !breakfastExpanded;
                         setBreakfastExpanded(newExpandedState);
-                        //setBreakfastIconColor(newExpandedState ? colors.primary : colors.secondary);
+                        setBreakfastIconColor(newExpandedState ? colors.primary : colors.secondary);
                     }}
                     titleStyle={styles.text}
                     style={styles.cardBackground}
@@ -190,127 +214,176 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="breakfast" />
 
-
-                    <View style={styles.savedContainer}>
-                        {breakfast.map((item, index) => (
-                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Calories: {item.calories}</Text>
-                                <Text>Protein: {item.protein_g}</Text>
-                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                                <Text>Fat: {item.fat_total_g}</Text>
-                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                                <Text>Fiber: {item.fiber_g}</Text>
-                                <Text>Sugar: {item.sugar_g}</Text>
-                                <Text>serving:{item.serving_size_g}</Text>
-                                <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
-                            </View>
-                        ))}
-                    </View>
+                <View style={styles.savedContainer}>
+                    {breakfast.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
+                        </View>
+                        
+                    ))}
+                </View>
                 </List.Accordion>
             </Card>
 
+// LUNCH
 
             <Card style={styles.mealCard}>
-                <View>
-                    <List.Accordion
-                        title={"Lunch" + " " + lunchCalories + " kCal"}
-                        left={(props) => <List.Icon {...props} icon="food" color={lunchIconColor} />}
-                        expanded={lunchExpanded}
-                        onPress={() => {
-                            const newExpandedState = !lunchExpanded;
-                            setLunchExpanded(newExpandedState);
-                            //setBreakfastIconColor(newExpandedState ? colors.primary : colors.secondary);
-                        }}
-                        titleStyle={styles.text}
-                        style={styles.cardBackground}
-                        theme={{ colors: { primary: colors.primary } }}
-                    >
-                        <AddFood onClick={onClick} meal="lunch" />
-                    </List.Accordion>
+                <List.Accordion
+                    title={"Lunch" + " " + lunchCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={lunchIconColor} />}
+                    expanded={lunchExpanded}
+                    onPress={() => {
+                        const newExpandedState = !lunchExpanded;
+                        setLunchExpanded(newExpandedState);
+                        setLunchIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
+                    <AddFood onClick={onClick} meal="lunch" />
+
+                <View style={styles.savedContainer}>
+                    {lunch.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
+                        </View>             
+                    ))}
                 </View>
-
-                {lunch.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
-                        <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
-                    </View>
-
-                ))}
+                </List.Accordion>
             </Card>
+
+// DINNER
 
             <Card style={styles.mealCard}>
-                <View>
-                    <List.Accordion
-                        title={"Dinner" + " " + dinnerCalories + " kCal"}
-                        left={(props) => <List.Icon {...props} icon="food" color={dinnerIconColor} />}
-                        expanded={dinnerExpanded}
-                        onPress={() => {
-                            const newExpandedState = !dinnerExpanded;
-                            setDinnerExpanded(newExpandedState);
-                            //setBreakfastIconColor(newExpandedState ? colors.primary : colors.secondary);
-                        }}
-                        titleStyle={styles.text}
-                        style={styles.cardBackground}
-                        theme={{ colors: { primary: colors.primary } }}
-                    >
-                        <AddFood setDinner={setDinner} />
-                    </List.Accordion>
+                <List.Accordion
+                    title={"Dinner" + " " + dinnerCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={dinnerIconColor} />}
+                    expanded={dinnerExpanded}
+                    onPress={() => {
+                        const newExpandedState = !dinnerExpanded;
+                        setDinnerExpanded(newExpandedState);
+                        setDinnertIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
+                    <AddFood onClick={onClick} meal="dinner" />
+
+                <View style={styles.savedContainer}>
+                    {dinner.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
+                        </View>                    
+                    ))}
                 </View>
-
-                {dinner.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
-
-                        <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
-                    </View>
-                ))}
+                </List.Accordion>
             </Card>
+
+// SNACKS
 
             <Card style={styles.mealCard}>
-                <View>
-                    <List.Accordion
-                        title="Snacks"
-                        left={(props) => <List.Icon {...props} icon="food" color={snacksIconColor} />}
-                        expanded={snacksExpanded}
-                        onPress={() => {
-                            const newExpandedState = !snacksExpanded;
-                            setSnacksExpanded(newExpandedState);
-                            //setBreakfastIconColor(newExpandedState ? colors.primary : colors.secondary);
-                        }}
-                        titleStyle={styles.text}
-                        style={styles.cardBackground}
-                        theme={{ colors: { primary: colors.primary } }}
-                    >
-                        <AddFood setSnacks={setSnacks} />
-                    </List.Accordion>
-                </View>
+                <List.Accordion
+                    title={"Snacks" + " " + snacksCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={snacksIconColor} />}
+                    expanded={snacksExpanded}
+                    onPress={() => {
+                        const newExpandedState = !snacksExpanded;
+                        setSnacksExpanded(newExpandedState);
+                        setSnacksIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
+                    <AddFood onClick={onClick} meal="snacks" />
 
-                {snacks.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
-                        <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
-                    </View>
-                ))}
+                <View style={styles.savedContainer}>
+                    {snacks.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
+                        </View>
+                        
+                    ))}
+                </View>
+                </List.Accordion>
             </Card>
+
+// SUPPER
+
+            <Card style={styles.mealCard}>
+                <List.Accordion
+                    title={"Supper" + " " + breakfastCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={supperIconColor} />}
+                    expanded={supperExpanded}
+                    onPress={() => {
+                        const newExpandedState = !supperExpanded;
+                        setSupperExpanded(newExpandedState);
+                        setSupperIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
+                    <AddFood onClick={onClick} meal="supper" />
+
+                <View style={styles.savedContainer}>
+                    {breakfast.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
+                        </View>          
+                    ))}
+                </View>
+                </List.Accordion>
+            </Card>
+
+// PIECHART
 
             <Card style={styles.cardStyle}>
                 <Card.Content style={styles.card}>
@@ -330,13 +403,3 @@ export default () => {
         </ScrollView>
     )
 }
-
-/* 
-                    <PieChart
-                        widthAndHeight={200}
-                        series={series}
-                        sliceColor={sliceColor}
-                        coverRadius={0.45}
-                        coverFill={colors.primary}
-                    />
-*/
