@@ -202,7 +202,7 @@ const AddFood = ({ onClick, meal }) => {
     )
 }
 
-const styles = StyleSheet.create({
+/* const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
         color: 'black',
     },
 
-})
+}) */
 
 
 export default AddFood;
