@@ -1,10 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import { FlatList, SafeAreaView, StyleSheet,Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Card } from 'react-native-paper';
+import { Card, DataTable } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { styles } from '../styles/styles'
+import { colors } from '../styles/colors'
 
-const AddFood = ({onClick, meal}) => {
+const AddFood = ({ onClick, meal}) => {
+
     const [filterData, setFilterData] = useState([])
     const [masterData, setMasterData] = useState([])
 
@@ -139,8 +143,8 @@ const AddFood = ({onClick, meal}) => {
 
 
     return (
-        <SafeAreaView style={{ backgroundColor: 'white' }}>
-            <View>
+        <SafeAreaView>
+            <View style={styles.row}>        
                 <TextInput
                     ref={inputRef}
                     style={styles.textInputStyle}
@@ -151,22 +155,20 @@ const AddFood = ({onClick, meal}) => {
                     
                 //selectioncolor
                 />
-            </View>
-            <View>
                 <TouchableOpacity style={styles.button}
                     title="Search"
                     onPress={fetchFoods}>
                     <Text style={styles.buttonText}>Search</Text>
                 </TouchableOpacity>
-
-            </View>
+                </View>
             <SafeAreaView>
                 <FlatList
+                    horizontal
                     data={filterData}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={async () => {
-                            setSelectedItem(prevItem => ({ ...prevItem, item }))
+                        <TouchableOpacity onPress={ () => {
+                            setSelectedItem(item)
                             onClick(item, meal);
                             // await AsyncStorage.setItem('selectedItem', JSON.stringify(item))
                         }}>
@@ -176,8 +178,17 @@ const AddFood = ({onClick, meal}) => {
                         </TouchableOpacity>
                     )}
                     ItemSeparatorComponent={ItemSeperatorView}
-
                 />
+
+                {selectedItem.length !== 0 &&
+                    <DataTable>
+                        <DataTable.Row>
+                            <DataTable.Cell><Text>{search}</Text></DataTable.Cell>
+                            <DataTable.Cell><Text>{selectedItem.calories} kCal</Text></DataTable.Cell>
+                        </DataTable.Row>
+                    </DataTable>
+                }
+
                 {/*{selectedItem && (
                    <View>
                        <Text style={styles.result}>Name: {selectedItem.name}</Text>
@@ -186,83 +197,11 @@ const AddFood = ({onClick, meal}) => {
                     </View>
                     )}
                     */} 
-                
+       
             </SafeAreaView>
         </SafeAreaView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-
-
-    ItemStyle: {
-        padding: 20,
-
-        justifyContent: 'center'
-    },
-    ItemStyle: {
-        padding: 20,
-    },
-    textInputStyle: {
-        borderColor: "#F5680A",
-        width: "80%",
-        borderWidth: 1,
-        borderRadius: 10,
-        padding: 10,
-        color: 'black',
-        fontSize: 16,
-        fontWeight: 'bold',
-        backgroundColor: 'white',
-        elevation: 5,
-    },
-    button: {
-        backgroundColor: "#F5680A",
-        margin: 10,
-        borderRadius: 10,
-        elevation: 5,
-        justifyContent: "center",
-        alignItems: "center",
-        width: "40%",
-        fontSize: 18,
-        padding: 10,
-        elevation: 5,
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        alignItems:'center',
-    },
-    buttonText: {
-        color: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-    },
-    result: {
-        fontFamily: 'Roboto',
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    cardContainer: {
-        margin: 16,
-        borderRadius: 8,
-        elevation: 4
-    },
-    itemContainer: {
-        padding: 20,
-        marginVertical: 10,
-        backgroundColor: '#f8f8f8',
-        borderRadius: 10,
-    },
-    itemText: {
-        fontSize: 20,
-        color: 'black',
-    },
-
-})
 
 
 export default AddFood;

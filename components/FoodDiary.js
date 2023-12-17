@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet, TextInput } from "react-native"
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable, List, Card } from "react-native-paper"
+import { PieChart } from "react-native-gifted-charts";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
 import { Link } from "@react-navigation/native";
+import { colors } from '../styles/colors'
 
-
-// HOXHOX TÄMÄ SIVU LAURALLA TYÖN ALLA !!
 
 export default () => {
 
@@ -45,11 +45,12 @@ export default () => {
     const [snacks, setSnacks] = useState([]);
     const [supper, setSupper] = useState([]);
 
-    const [breakfastIconColor, setBreakfastIconColor] = useState('green');
-    const [lunchIconColor, setLunchIconColor] = useState('green');
-    const [dinnerIconColor, setDinnerIconColor] = useState('green');
-    const [snacksIconColor, setSnacksIconColor] = useState('green');
-    const [supperIconColor, setSupperIconColor] = useState('green');
+    const [breakfastIconColor, setBreakfastIconColor] = useState(colors.secondary);
+    const [lunchIconColor, setLunchIconColor] = useState(colors.secondary);
+    const [dinnerIconColor, setDinnerIconColor] = useState(colors.secondary);
+    const [snacksIconColor, setSnacksIconColor] = useState(colors.secondary);
+    const [supperIconColor, setSupperIconColor] = useState(colors.secondary);
+
 
 
     const handlePress = () => {
@@ -95,27 +96,8 @@ export default () => {
                 break;
         }
     };
-    //add food diary osa loppuu
-
-    const openCalendar = () => {
-        setOpen(!open)
-    }
-    const handleChange = (propDate) => {
-        const [year, month, date] = propDate.split("/")
-        setSelectedDate(new Date(year, month - 1, date))
-        setOpen(!open)
-    }
-    const nextDay = () => {
-        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
-        const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
-        setSelectedDate(newDate)
-    }
-    const previousDay = () => {
-        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
-        setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
-    }
-
-    const onClick = (item, meal) => {
+  
+  const onClick = (item, meal) => {
         // setSelectedItem(item);
         // await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
         switch (meal) {
@@ -139,21 +121,61 @@ export default () => {
         }
     }
 
-    console.log(lunch)
+    //add food diary osa loppuu
+
+    // CALENDAR:
+
+    const openCalendar = () => {
+        setOpen(!open)
+    }
+    const handleChange = (propDate) => {
+        const [year, month, date] = propDate.split("/")
+        setSelectedDate(new Date(year, month - 1, date))
+        setOpen(!open)
+    }
+    const nextDay = () => {
+        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
+        const newDate = new Date(selectedDate.getTime() + oneDayInMilliseconds)
+        setSelectedDate(newDate)
+    }
+    const previousDay = () => {
+        const oneDayInMilliseconds = 1000 * 60 * 60 * 24
+        setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
+    }
+
+    // PIE CHART:
+
+    const pieData = [
+        { text: 'Protein  ', value: 47, color: '#b0f2b4'},
+        { text: 'Carbs', value: 40, color: '#baf2e9'},
+        { text: 'Fat', value: 16, color: '#bad7f2'},
+        { text: 'Fiber', value: 30, color: '#f2bac9'},
+        { text: 'Sugar', value: 30, color: '#f2e2ba'},
+    ];
+
+
+    const centerLabel = () => {
+        return (
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 22, color: colors.secondary, fontWeight: 'bold' }}>1756</Text>
+                <Text style={{ fontSize: 14, color: colors.secondary, fontWeight: 'bold' }}>kCal</Text>
+            </View>
+        )
+    }
 
 
     return (
-        <ScrollView >
+        <ScrollView style={styles.background} keyboardShouldPersistTaps='handled'>
             <View style={styles.pressables}>
-                <Pressable onPress={previousDay} style={styles.pressable}>
-                    <MaterialCommunityIcons name="arrow-left" style={styles.boldText} />
-                </Pressable>
-                <Pressable onPress={openCalendar} style={styles.pressable}>
-                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "DD.MM.YYYY")}</Text>
-                </Pressable>
-                <Pressable onPress={nextDay} style={styles.pressable}>
-                    <MaterialCommunityIcons name="arrow-right" style={styles.boldText} />
-                </Pressable>
+                <TouchableOpacity onPress={previousDay} style={styles.pressable}>
+                    <MaterialCommunityIcons name="chevron-double-left" style={styles.boldText} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={openCalendar} style={styles.pressable}>
+                    <Text style={styles.boldText}>{getFormatedDate(selectedDate, "DD.MM.YYYY")} <MaterialCommunityIcons name="chevron-down" style={styles.boldText} /></Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={nextDay} style={styles.pressable}>
+                    <MaterialCommunityIcons name="chevron-double-right" style={styles.boldText} />
+                </TouchableOpacity>
             </View>
             <Modal animationType="slide" transparent={true} visible={open}>
                 <View style={styles.centeredView}>
@@ -170,28 +192,28 @@ export default () => {
                 </View>
             </Modal>
 
-            <View>
+            <View style={{ alignItems: 'center', marginTop: 10 }}>
                 <Text style={styles.title3}>Total calories of the day: {totalCalories}</Text>
             </View>
 
+// BREAKFAST
 
-    
-
-
-            <DataTable>
+            <Card style={styles.mealCard}>
                 <List.Accordion
                     title={"Breakfast" + " " + breakfastCalories + " kCal"}
-                    left={props => <List.Icon {...props} icon="food" />}
+                    left={props => <List.Icon {...props} icon="food" color={breakfastIconColor} />}
                     expanded={breakfastExpanded}
                     onPress={() => {
                         const newExpandedState = !breakfastExpanded;
                         setBreakfastExpanded(newExpandedState);
-                        setBreakfastIconColor(newExpandedState ? 'green' : '#F49379');
+                        setBreakfastIconColor(newExpandedState ? colors.primary : colors.secondary);
                     }}
-                    style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
                 >
                     <AddFood onClick={onClick} meal="breakfast" />
-                </List.Accordion>
+
                 <View style={styles.savedContainer}>
                     {breakfast.map((item, index) => (
                         <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
@@ -209,105 +231,175 @@ export default () => {
                         
                     ))}
                 </View>
+                </List.Accordion>
+            </Card>
+
+// LUNCH
+
+            <Card style={styles.mealCard}>
                 <List.Accordion
                     title={"Lunch" + " " + lunchCalories + " kCal"}
-                    left={(props) => <List.Icon {...props} icon="food" color={lunchIconColor} />}
+                    left={props => <List.Icon {...props} icon="food" color={lunchIconColor} />}
                     expanded={lunchExpanded}
                     onPress={() => {
                         const newExpandedState = !lunchExpanded;
                         setLunchExpanded(newExpandedState);
-                        setLunchIconColor(newExpandedState ? 'green' : '#F49379');
+                        setLunchIconColor(newExpandedState ? colors.primary : colors.secondary);
                     }}
-                    style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
                 >
                     <AddFood onClick={onClick} meal="lunch" />
+
+                <View style={styles.savedContainer}>
+                    {lunch.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
+                        </View>             
+                    ))}
+                </View>
                 </List.Accordion>
-                {lunch.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
-                        <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
-                    </View>
-                ))}
+            </Card>
+
+// DINNER
+
+            <Card style={styles.mealCard}>
                 <List.Accordion
-                    title="Dinner"
-                    left={(props) => <List.Icon {...props} icon="food" color={dinnerIconColor} />}
+                    title={"Dinner" + " " + dinnerCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={dinnerIconColor} />}
                     expanded={dinnerExpanded}
                     onPress={() => {
                         const newExpandedState = !dinnerExpanded;
                         setDinnerExpanded(newExpandedState);
-                        setDinnerIconColor(newExpandedState ? 'green' : '#F49379')
+                        setDinnertIconColor(newExpandedState ? colors.primary : colors.secondary);
                     }}
-                    style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
                 >
                     <AddFood onClick={onClick} meal="dinner" />
+
+                <View style={styles.savedContainer}>
+                    {dinner.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
+                        </View>                    
+                    ))}
+                </View>
                 </List.Accordion>
-                {dinner.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
+            </Card>
 
-                        <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
-                    </View>
-                ))}
+// SNACKS
 
+            <Card style={styles.mealCard}>
                 <List.Accordion
-                    title="Snacks"
-                    left={(props) => <List.Icon {...props} icon="food" color={snacksIconColor} />}
+                    title={"Snacks" + " " + snacksCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={snacksIconColor} />}
                     expanded={snacksExpanded}
                     onPress={() => {
                         const newExpandedState = !snacksExpanded;
                         setSnacksExpanded(newExpandedState);
-                        setSnacksIconColor(newExpandedState ? 'green' : '#F49379');
-                    }} style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}>
+                        setSnacksIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
                     <AddFood onClick={onClick} meal="snacks" />
+
+                <View style={styles.savedContainer}>
+                    {snacks.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
+                        </View>
+                        
+                    ))}
+                </View>
                 </List.Accordion>
-                {snacks.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
-                        <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
-                    </View>
-                ))}
+            </Card>
+
+// SUPPER
+
+            <Card style={styles.mealCard}>
                 <List.Accordion
-                    title="Supper"
-                    left={(props) => <List.Icon {...props} icon="food" color={supperIconColor} />}
+                    title={"Supper" + " " + breakfastCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={supperIconColor} />}
                     expanded={supperExpanded}
                     onPress={() => {
                         const newExpandedState = !supperExpanded;
                         setSupperExpanded(newExpandedState);
-                        setSupperIconColor(newExpandedState ? 'green' : '#F49379');
-                    }} style={{ borderRadius: 20, borderColor: '#d8c5bf', borderWidth: 1, paddingBottom: 10 }}>
+                        setSupperIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
                     <AddFood onClick={onClick} meal="supper" />
+
+                <View style={styles.savedContainer}>
+                    {breakfast.map((item, index) => (
+                        <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
+                            <Text>Name: {item.name}</Text>
+                            <Text>Calories: {item.calories}</Text>
+                            <Text>Protein: {item.protein_g}</Text>
+                            <Text>Carbs: {item.carbohydrates_total_g}</Text>
+                            <Text>Fat: {item.fat_total_g}</Text>
+                            <Text>Saturated Fat: {item.fat_saturated_g}</Text>
+                            <Text>Fiber: {item.fiber_g}</Text>
+                            <Text>Sugar: {item.sugar_g}</Text>
+                            <Text>serving:{item.serving_size_g}</Text>
+                            <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
+                        </View>          
+                    ))}
+                </View>
                 </List.Accordion>
-                {supper.map((item, index) => (
-                    <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5 }}>
-                        <Text>Name: {item.name}</Text>
-                        <Text>Calories: {item.calories}</Text>
-                        <Text>Protein: {item.protein_g}</Text>
-                        <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                        <Text>Fat: {item.fat_total_g}</Text>
-                        <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                        <Text>Sugar: {item.sugar_g}</Text>
-                        <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
-                    </View>
-                ))}
-            </DataTable>
+            </Card>
+
+// PIECHART
+
+            <Card style={styles.cardStyle}>
+                <Card.Content style={styles.card}>
+                    <PieChart
+                        data={pieData}
+                        donut={true}
+                        radius={120}
+                        innerRadius={50}
+                        showText={true}
+                        labelsPosition='outward'
+                        centerLabelComponent={centerLabel}
+                        textColor="black"
+
+                    />
+                </Card.Content>
+            </Card>
         </ScrollView>
     )
 }
