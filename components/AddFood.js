@@ -178,38 +178,9 @@ const AddFood = ({ onClick, meal }) => {
                     )}
                     ItemSeparatorComponent={ItemSeperatorView}
                 />
-
-                {selectedItem.length !== 0 &&
-                    <DataTable>
-                        <DataTable.Row>
-                            <DataTable.Cell><Text>{search}</Text></DataTable.Cell>
-                            <DataTable.Cell><Text>{selectedItem.calories} kCal</Text></DataTable.Cell>
-                        </DataTable.Row>
-                    </DataTable>
-                }
-
-                {/*{selectedItem && (
-                   <View>
-                       <Text style={styles.result}>Name: {selectedItem.name}</Text>
-                        <Text style={styles.result}>Calories: {selectedItem.calories}</Text>
-                        
-                    </View>
-                    )}
-                    */}
-
             </SafeAreaView>
         </SafeAreaView>
     )
 }
 
 export default AddFood;
-
-/*<Text style={styles.result}>Calories: {selectedItem.calories}</Text>
-                            <Text style={styles.result}>Protein: {selectedItem.protein_g}</Text>
-                            <Text style={styles.result}>Carbohydrates: {selectedItem.carbohydrates_total_g}</Text>
-                            <Text style={styles.result}>Fat: {selectedItem.fat_total_g}</Text>
-                            <Text style={styles.result}>Saturated Fat: {selectedItem.fat_saturated_g}</Text>
-                            <Text style={styles.result}>Fiber: {selectedItem.fiber_g}</Text>
-                            <Text style={styles.result}>Sugar: {selectedItem.sugar_g}</Text>
-                            <Text style={styles.result}>Sodium: {selectedItem.sodium_mg}</Text>
-                            <Text style={styles.result}>Potassium: {selectedItem.potassium_mg}</Text>*/

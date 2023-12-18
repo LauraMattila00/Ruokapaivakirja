@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Text, View, ScrollView, TouchableOpacity, Button, Pressable, Modal, StyleSheet } from "react-native"
+import { Text, View, ScrollView, TouchableOpacity, Pressable, Modal } from "react-native"
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import { DataTable, List, Card } from "react-native-paper"
-import { PieChart } from "react-native-gifted-charts";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
-import { Link } from "@react-navigation/native";
 import { colors } from '../styles/colors'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -35,7 +33,7 @@ export default () => {
         total + currentValue.calories, 0));
     const [supper, setSupper] = useState([]);
     const supperCalories = Math.ceil(supper.reduce((total, currentValue) =>
-        total + currentValue.supper, 0));
+        total + currentValue.calories, 0));
     const [snacks, setSnacks] = useState([]);
     const snacksCalories = Math.floor(snacks.reduce((total, currentValue) =>
         total + currentValue.calories, 0));
@@ -54,7 +52,7 @@ export default () => {
             await loadMeal('breakfast', selectedDate).then(items => setBreakfast(items.map(item => item.food)))
             await loadMeal('lunch', selectedDate).then(items => setLunch(items.map(item => item.food)))
             await loadMeal('dinner', selectedDate).then(items => setDinner(items.map(item => item.food)))
-            //await loadMeal('supper', selectedDate).then(items => setSupper(items.map(item => item.food)))
+            await loadMeal('supper', selectedDate).then(items => setSupper(items.map(item => item.food)))
             await loadMeal('snacks', selectedDate).then(items => setSnacks(items.map(item => item.food)))
         }
         loadData()
@@ -177,26 +175,6 @@ export default () => {
         setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
     }
 
-    // PIE CHART:
-
-    const pieData = [
-        { text: 'Protein  ', value: 47, color: '#b0f2b4' },
-        { text: 'Carbs', value: 40, color: '#baf2e9' },
-        { text: 'Fat', value: 16, color: '#bad7f2' },
-        { text: 'Fiber', value: 30, color: '#f2bac9' },
-        { text: 'Sugar', value: 30, color: '#f2e2ba' },
-    ];
-
-
-    const centerLabel = () => {
-        return (
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 22, color: colors.secondary, fontWeight: 'bold' }}>1756</Text>
-                <Text style={{ fontSize: 14, color: colors.secondary, fontWeight: 'bold' }}>kCal</Text>
-            </View>
-        )
-    }
-
     return (
         <ScrollView style={styles.background} keyboardShouldPersistTaps='handled'>
             <View style={styles.pressables}>
@@ -246,23 +224,36 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="breakfast" />
 
-                    <View style={styles.savedContainer}>
-                        {breakfast.map((item, index) => (
-                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Calories: {item.calories}</Text>
-                                <Text>Protein: {item.protein_g}</Text>
-                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                                <Text>Fat: {item.fat_total_g}</Text>
-                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                                <Text>Fiber: {item.fiber_g}</Text>
-                                <Text>Sugar: {item.sugar_g}</Text>
-                                <Text>serving:{item.serving_size_g}</Text>
-                                <Button title="Delete" onPress={() => deleteFoodItem('breakfast', index)} />
-                            </View>
 
-                        ))}
-                    </View>
+                    {breakfast.map((item, index) => (
+                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                            <DataTable>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('breakfast', index)}>
+                                        <MaterialCommunityIcons name="trash-can-outline" size={20} />
+                                    </Pressable>
+                                </DataTable.Row>
+                            </DataTable>
+
+                        </List.Accordion>
+                    ))}
+
                 </List.Accordion>
             </Card>
 
@@ -283,22 +274,34 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="lunch" />
 
-                    <View style={styles.savedContainer}>
-                        {lunch.map((item, index) => (
-                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Calories: {item.calories}</Text>
-                                <Text>Protein: {item.protein_g}</Text>
-                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                                <Text>Fat: {item.fat_total_g}</Text>
-                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                                <Text>Fiber: {item.fiber_g}</Text>
-                                <Text>Sugar: {item.sugar_g}</Text>
-                                <Text>serving:{item.serving_size_g}</Text>
-                                <Button title="Delete" onPress={() => deleteFoodItem('lunch', index)} />
-                            </View>
-                        ))}
-                    </View>
+                    {lunch.map((item, index) => (
+                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                            <DataTable>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('lunch', index)}>
+                                        <MaterialCommunityIcons name="trash-can-outline" size={20} />
+                                    </Pressable>
+                                </DataTable.Row>
+                            </DataTable>
+
+                        </List.Accordion>
+                    ))}
                 </List.Accordion>
             </Card >
 
@@ -319,62 +322,36 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="dinner" />
 
-                    <View style={styles.savedContainer}>
-                        {dinner.map((item, index) => (
-                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Calories: {item.calories}</Text>
-                                <Text>Protein: {item.protein_g}</Text>
-                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                                <Text>Fat: {item.fat_total_g}</Text>
-                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                                <Text>Fiber: {item.fiber_g}</Text>
-                                <Text>Sugar: {item.sugar_g}</Text>
-                                <Text>serving:{item.serving_size_g}</Text>
-                                <Button title="Delete" onPress={() => deleteFoodItem('dinner', index)} />
-                            </View>
-                        ))}
-                    </View>
+                    {dinner.map((item, index) => (
+                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                            <DataTable>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('dinner', index)}>
+                                        <MaterialCommunityIcons name="trash-can-outline" size={20} />
+                                    </Pressable>
+                                </DataTable.Row>
+                            </DataTable>
+
+                        </List.Accordion>
+                    ))}
                 </List.Accordion >
             </Card >
-
-
-            <Card style={styles.mealCard}>
-                <List.Accordion
-                    title={"Snacks" + " " + snacksCalories + " kCal"}
-                    left={props => <List.Icon {...props} icon="food" color={snacksIconColor} />}
-                    expanded={snacksExpanded}
-                    onPress={() => {
-                        const newExpandedState = !snacksExpanded;
-                        setSnacksExpanded(newExpandedState);
-                        setSnacksIconColor(newExpandedState ? colors.primary : colors.secondary);
-                    }}
-                    titleStyle={styles.text}
-                    style={styles.cardBackground}
-                    theme={{ colors: { primary: colors.primary } }}
-                >
-                    <AddFood onClick={onClick} meal="snacks" />
-
-                    <View style={styles.savedContainer}>
-                        {snacks.map((item, index) => (
-                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Calories: {item.calories}</Text>
-                                <Text>Protein: {item.protein_g}</Text>
-                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                                <Text>Fat: {item.fat_total_g}</Text>
-                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                                <Text>Fiber: {item.fiber_g}</Text>
-                                <Text>Sugar: {item.sugar_g}</Text>
-                                <Text>serving:{item.serving_size_g}</Text>
-                                <Button title="Delete" onPress={() => deleteFoodItem('snacks', index)} />
-                            </View>
-
-                        ))}
-                    </View>
-                </List.Accordion>
-            </Card>
-
 
             <Card style={styles.mealCard}>
                 <List.Accordion
@@ -392,40 +369,82 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="supper" />
 
-                    <View style={styles.savedContainer}>
-                        {breakfast.map((item, index) => (
-                            <View key={index} style={{ padding: 10, margin: 10, backgroundColor: '#f8f8f8', borderRadius: 5, fontStyle: 'bold' }}>
-                                <Text>Name: {item.name}</Text>
-                                <Text>Calories: {item.calories}</Text>
-                                <Text>Protein: {item.protein_g}</Text>
-                                <Text>Carbs: {item.carbohydrates_total_g}</Text>
-                                <Text>Fat: {item.fat_total_g}</Text>
-                                <Text>Saturated Fat: {item.fat_saturated_g}</Text>
-                                <Text>Fiber: {item.fiber_g}</Text>
-                                <Text>Sugar: {item.sugar_g}</Text>
-                                <Text>serving:{item.serving_size_g}</Text>
-                                <Button title="Delete" onPress={() => deleteFoodItem('supper', index)} />
-                            </View>
-                        ))}
-                    </View>
+                    {supper.map((item, index) => (
+                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                            <DataTable>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('supper', index)}>
+                                        <MaterialCommunityIcons name="trash-can-outline" size={20} />
+                                    </Pressable>
+                                </DataTable.Row>
+                            </DataTable>
+
+                        </List.Accordion>
+                    ))}
                 </List.Accordion>
             </Card>
 
+            <Card style={styles.mealCard}>
+                <List.Accordion
+                    title={"Snacks" + " " + snacksCalories + " kCal"}
+                    left={props => <List.Icon {...props} icon="food" color={snacksIconColor} />}
+                    expanded={snacksExpanded}
+                    onPress={() => {
+                        const newExpandedState = !snacksExpanded;
+                        setSnacksExpanded(newExpandedState);
+                        setSnacksIconColor(newExpandedState ? colors.primary : colors.secondary);
+                    }}
+                    titleStyle={styles.text}
+                    style={styles.cardBackground}
+                    theme={{ colors: { primary: colors.primary } }}
+                >
+                    <AddFood onClick={onClick} meal="snacks" />
 
-            <Card style={styles.cardStyle}>
-                <Card.Content style={styles.card}>
-                    <PieChart
-                        data={pieData}
-                        donut={true}
-                        radius={120}
-                        innerRadius={50}
-                        showText={true}
-                        labelsPosition='outward'
-                        centerLabelComponent={centerLabel}
-                        textColor="black"
+                    {snacks.map((item, index) => (
+                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                            <DataTable>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('snacks', index)}>
+                                        <MaterialCommunityIcons name="trash-can-outline" size={20} />
+                                    </Pressable>
+                                </DataTable.Row>
+                            </DataTable>
 
-                    />
-                </Card.Content>
+                        </List.Accordion>
+                    ))}
+                </List.Accordion>
             </Card>
         </ScrollView >
     )
