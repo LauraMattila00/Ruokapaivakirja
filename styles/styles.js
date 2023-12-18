@@ -205,6 +205,16 @@ export const styles = StyleSheet.create({
         //justifyContent:'space-between',
         //alignItems:'center',
     },
+    button2: {
+        backgroundColor: colors.secondary,
+        marginTop: 5,
+        marginLeft: 100,
+        marginRight: 100,
+        marginBottom: 5,
+        borderRadius: 30,
+        elevation: 5,
+        padding: 15
+    },
     buttonText: {
         color: 'black',
         fontSize: 12,
@@ -239,5 +249,9 @@ export const styles = StyleSheet.create({
     row2: {
         flexDirection: 'row',
         alignItems: 'center'
+    },
+    row3: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     }
 })
