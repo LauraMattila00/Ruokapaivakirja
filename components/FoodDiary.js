@@ -259,7 +259,7 @@ export default () => {
             </Modal>
 
             <View style={{ alignItems: 'center', marginTop: 10 }}>
-                <Text style={styles.title3}>Total calories of the day: {totalCalories} kCal {totalProteins}</Text>
+                <Text style={styles.title3}>Total calories of the day: {totalCalories} kCal</Text>
             </View>
 
 
