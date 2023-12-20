@@ -128,7 +128,7 @@ const Home = ({ navigation }) => {
                     </View>
                 </Card.Content>
             </Card>
-            <Card style={styles.cardStyle}>
+            {/*<Card style={styles.cardStyle}>
                 <Link to={{ screen: 'WeightControl' }}>
                     <Card.Title titleStyle={styles.title2} title="Weight" />
                     <Card.Content style={styles.card}>
@@ -137,7 +137,7 @@ const Home = ({ navigation }) => {
                         </View>
                     </Card.Content>
                 </Link>
-            </Card>
+                            </Card>*/}
         </ScrollView >
     )
 }
