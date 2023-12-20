@@ -59,7 +59,6 @@ export default () => {
         loadData()
     }, [selectedDate])
 
-
     const saveMeal = async (meal, date, food) => {
         try {
             //await AsyncStorage.clear()
@@ -176,60 +175,6 @@ export default () => {
         setSelectedDate(new Date(selectedDate.getTime() - oneDayInMilliseconds))
     }
 
-    // PIE CHART:
-
-    const totalProteins = 
-        (breakfast.reduce((total, currentValue) => total + currentValue.protein_g, 0))
-        + (lunch.reduce((total, currentValue) => total + currentValue.protein_g, 0))
-        + (dinner.reduce((total, currentValue) => total + currentValue.protein_g, 0))
-        + (supper.reduce((total, currentValue) => total + currentValue.protein_g, 0))
-        + (snacks.reduce((total, currentValue) => total + currentValue.protein_g, 0))
-
-    const totalCarbs = 
-        (breakfast.reduce((total, currentValue) => total + currentValue.carbohydrates_total_g, 0))
-        + (lunch.reduce((total, currentValue) => total + currentValue.carbohydrates_total_g, 0))
-        + (dinner.reduce((total, currentValue) => total + currentValue.carbohydrates_total_g, 0))
-        + (supper.reduce((total, currentValue) => total + currentValue.carbohydrates_total_g, 0))
-        + (snacks.reduce((total, currentValue) => total + currentValue.carbohydrates_total_g, 0))
-
-    const totalFat = 
-        (breakfast.reduce((total, currentValue) => total + currentValue.fat_total_g, 0))
-        + (lunch.reduce((total, currentValue) => total + currentValue.fat_total_g, 0))
-        + (dinner.reduce((total, currentValue) => total + currentValue.fat_total_g, 0))
-        + (supper.reduce((total, currentValue) => total + currentValue.fat_total_g, 0))
-        + (snacks.reduce((total, currentValue) => total + currentValue.fat_total_g, 0))
-
-    const totalSugar = 
-        (breakfast.reduce((total, currentValue) => total + currentValue.sugar_g, 0))
-        + (lunch.reduce((total, currentValue) => total + currentValue.sugar_g, 0))
-        + (dinner.reduce((total, currentValue) => total + currentValue.sugar_g, 0))
-        + (supper.reduce((total, currentValue) => total + currentValue.sugar_g, 0))
-        + (snacks.reduce((total, currentValue) => total + currentValue.sugar_g, 0))
-
-    const totalFiber = 
-        (breakfast.reduce((total, currentValue) => total + currentValue.fiber_g, 0))
-        + (lunch.reduce((total, currentValue) => total + currentValue.fiber_g, 0))
-        + (dinner.reduce((total, currentValue) => total + currentValue.fiber_g, 0))
-        + (supper.reduce((total, currentValue) => total + currentValue.fiber_g, 0))
-        + (snacks.reduce((total, currentValue) => total + currentValue.fiber_g, 0))
-
-    const pieData = [
-        { text: 'Protein', value: 47, color: '#b0f2b4' },
-        { text: 'Carbs', value: 40, color: '#baf2e9' },
-        { text: 'Fat', value: 16, color: '#bad7f2' },
-        { text: 'Fiber', value: 30, color: '#f2bac9' },
-        { text: 'Sugar', value: 30, color: '#f2e2ba' },
-    ];
-
-    const centerLabel = () => {
-        return (
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 22, color: colors.secondary, fontWeight: 'bold' }}>{totalCalories}</Text>
-                <Text style={{ fontSize: 14, color: colors.secondary, fontWeight: 'bold' }}>kCal</Text>
-            </View>
-        )
-    }
-
     return (
         <ScrollView style={styles.background} keyboardShouldPersistTaps='handled'>
             <View style={styles.pressables}>
@@ -259,7 +204,7 @@ export default () => {
             </Modal>
 
             <View style={{ alignItems: 'center', marginTop: 10 }}>
-                <Text style={styles.title3}>Total calories of the day: {totalCalories} kCal {totalProteins}</Text>
+                <Text style={styles.title3}>Total calories of the day: {totalCalories} kCal </Text>
             </View>
 
 
@@ -500,22 +445,6 @@ export default () => {
                         </List.Accordion>
                     ))}
                 </List.Accordion>
-            </Card>
-
-            <Card style={styles.cardStyle}>
-                <Card.Content style={styles.card}>
-                    <PieChart
-                        data={pieData}
-                        donut={true}
-                        radius={120}
-                        innerRadius={50}
-                        showText={true}
-                        labelsPosition='outward'
-                        centerLabelComponent={centerLabel}
-                        textColor="black"
-
-                    />
-                </Card.Content>
             </Card>
         </ScrollView >
     )
