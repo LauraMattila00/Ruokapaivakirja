@@ -8,6 +8,7 @@ import AddFood from "./AddFood";
 import { styles } from "../styles/styles"
 import { colors } from '../styles/colors'
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import uuid from 'react-native-uuid';
 
 
 export default () => {
@@ -25,19 +26,19 @@ export default () => {
 
     const [breakfast, setBreakfast] = useState([]);
     const breakfastCalories = Math.ceil(breakfast.reduce((total, currentValue) =>
-        total + currentValue.calories, 0));
+        total + currentValue.food.calories, 0));
     const [lunch, setLunch] = useState([]);
     const lunchCalories = Math.ceil(lunch.reduce((total, currentValue) =>
-        total + currentValue.calories, 0));
+        total + currentValue.food.calories, 0));
     const [dinner, setDinner] = useState([]);
     const dinnerCalories = Math.ceil(dinner.reduce((total, currentValue) =>
-        total + currentValue.calories, 0));
+        total + currentValue.food.calories, 0));
     const [supper, setSupper] = useState([]);
     const supperCalories = Math.ceil(supper.reduce((total, currentValue) =>
-        total + currentValue.calories, 0));
+        total + currentValue.food.calories, 0));
     const [snacks, setSnacks] = useState([]);
     const snacksCalories = Math.floor(snacks.reduce((total, currentValue) =>
-        total + currentValue.calories, 0));
+        total + currentValue.food.calories, 0));
 
     const totalCalories = breakfastCalories + lunchCalories +
         dinnerCalories + snacksCalories + supperCalories;
@@ -50,11 +51,11 @@ export default () => {
 
     useEffect(() => {
         const loadData = async () => {
-            await loadMeal('breakfast', selectedDate).then(items => setBreakfast(items.map(item => item.food)))
-            await loadMeal('lunch', selectedDate).then(items => setLunch(items.map(item => item.food)))
-            await loadMeal('dinner', selectedDate).then(items => setDinner(items.map(item => item.food)))
-            await loadMeal('supper', selectedDate).then(items => setSupper(items.map(item => item.food)))
-            await loadMeal('snacks', selectedDate).then(items => setSnacks(items.map(item => item.food)))
+            await loadMeal('breakfast', selectedDate).then(items => setBreakfast(items))
+            await loadMeal('lunch', selectedDate).then(items => setLunch(items))
+            await loadMeal('dinner', selectedDate).then(items => setDinner(items))
+            await loadMeal('supper', selectedDate).then(items => setSupper(items))
+            await loadMeal('snacks', selectedDate).then(items => setSnacks(items))
         }
         loadData()
     }, [selectedDate])
@@ -64,9 +65,29 @@ export default () => {
             //await AsyncStorage.clear()
             const prevItems = JSON.parse(await AsyncStorage.getItem('foods'))
             const item = {
-                meal, date: getFormatedDate(date, 'DD.MM.YYYY'), food
+                meal, date: getFormatedDate(date, 'DD.MM.YYYY'), food, id: uuid.v4()
             }
             await AsyncStorage.setItem('foods', JSON.stringify(prevItems ? [...prevItems, item] : [item]));
+            console.log(item)
+            switch (meal) {
+                case 'breakfast':
+                    setBreakfast(prevItems => [...prevItems, item]);
+                    break;
+                case 'lunch':
+                    setLunch(prevItems => [...prevItems, item]);
+                    break;
+                case 'dinner':
+                    setDinner(prevItems => [...prevItems, item]);
+                    break;
+                case 'snacks':
+                    setSnacks(prevItems => [...prevItems, item]);
+                    break;
+                case 'supper':
+                    setSupper(prevItems => [...prevItems, item]);
+                    break;
+                default:
+                    console.log('Invalid meal');
+            }
         } catch (e) {
             console.log(e)
         }
@@ -86,6 +107,20 @@ export default () => {
         }
     }
 
+    const DeleteFood = async (id) => {
+        try {
+            const data = await AsyncStorage.getItem('foods');
+            const json = JSON.parse(data)
+            if (json != null) {
+                const foods = json.filter(item => item.id !== id)
+                AsyncStorage.setItem('foods', JSON.stringify(foods))
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
     const handlePress = () => {
         setExpanded(!expanded);
     };
@@ -97,31 +132,32 @@ export default () => {
 
     //loppuu
 
-    const deleteFoodItem = (mealType, index) => {
+    const deleteFoodItem = (mealType, id) => {
+        DeleteFood(id)
         switch (mealType) {
             case 'breakfast':
                 setBreakfast((prevBreakfast) => {
-                    return prevBreakfast.filter((item, i) => i !== index);
+                    return prevBreakfast.filter((item) => item.id !== id);
                 });
                 break;
             case 'lunch':
                 setLunch((prevLunch) => {
-                    return prevLunch.filter((item, i) => i !== index);
+                    return prevLunch.filter((item) => item.id !== id);
                 });
                 break;
             case 'dinner':
                 setDinner((prevDinner) => {
-                    return prevDinner.filter((item, i) => i !== index);
+                    return prevDinner.filter((item) => item.id !== id);
                 });
                 break;
             case 'snacks':
                 setSnacks((prevSnacks) => {
-                    return prevSnacks.filter((item, i) => i !== index);
+                    return prevSnacks.filter((item) => item.id !== id);
                 });
                 break;
             case 'supper':
                 setSupper((prevSupper) => {
-                    return prevSupper.filter((item, i) => i !== index);
+                    return prevSupper.filter((item) => item.id !== id);
                 });
             default:
                 break;
@@ -132,25 +168,6 @@ export default () => {
         saveMeal(meal, selectedDate, item)
         // setSelectedItem(item);
         // await AsyncStorage.setItem('selectedItem', JSON.stringify(item));
-        switch (meal) {
-            case 'breakfast':
-                setBreakfast(prevItems => [...prevItems, item]);
-                break;
-            case 'lunch':
-                setLunch(prevItems => [...prevItems, item]);
-                break;
-            case 'dinner':
-                setDinner(prevItems => [...prevItems, item]);
-                break;
-            case 'snacks':
-                setSnacks(prevItems => [...prevItems, item]);
-                break;
-            case 'supper':
-                setSupper(prevItems => [...prevItems, item]);
-                break;
-            default:
-                console.log('Invalid meal');
-        }
     }
 
     //add food diary osa loppuu
@@ -225,27 +242,27 @@ export default () => {
                     <AddFood onClick={onClick} meal="breakfast" />
 
 
-                    {breakfast.map((item, index) => (
-                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                    {breakfast.map((item) => (
+                        <List.Accordion title={item.food.name + ' (' + item.food.calories + ' kcal)'} key={item.id} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
                             <DataTable>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Name: {item.food.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.food.serving_size_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Calories: {item.food.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.food.protein_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Carbs: {item.food.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.food.fat_total_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Sugar: {item.food.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.food.fiber_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('breakfast', index)}>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('breakfast', item.id)}>
                                         <MaterialCommunityIcons name="trash-can-outline" size={20} />
                                     </Pressable>
                                 </DataTable.Row>
@@ -274,27 +291,27 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="lunch" />
 
-                    {lunch.map((item, index) => (
-                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                    {lunch.map((item) => (
+                        <List.Accordion title={item.food.name + ' (' + item.food.calories + ' kcal)'} key={item.id} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
                             <DataTable>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Name: {item.food.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.food.serving_size_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Calories: {item.food.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.food.protein_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Carbs: {item.food.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.food.fat_total_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Sugar: {item.food.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.food.fiber_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('lunch', index)}>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('lunch', item.id)}>
                                         <MaterialCommunityIcons name="trash-can-outline" size={20} />
                                     </Pressable>
                                 </DataTable.Row>
@@ -322,27 +339,27 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="dinner" />
 
-                    {dinner.map((item, index) => (
-                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                    {dinner.map((item) => (
+                        <List.Accordion title={item.food.name + ' (' + item.food.calories + ' kcal)'} key={item.id} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
                             <DataTable>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Name: {item.food.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.food.serving_size_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Calories: {item.food.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.food.protein_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Carbs: {item.food.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.food.fat_total_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Sugar: {item.food.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.food.fiber_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('dinner', index)}>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('dinner', item.id)}>
                                         <MaterialCommunityIcons name="trash-can-outline" size={20} />
                                     </Pressable>
                                 </DataTable.Row>
@@ -369,27 +386,27 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="supper" />
 
-                    {supper.map((item, index) => (
-                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                    {supper.map((item) => (
+                        <List.Accordion title={item.food.name + ' (' + item.food.calories + ' kcal)'} key={item.id} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
                             <DataTable>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Name: {item.food.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.food.serving_size_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Calories: {item.food.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.food.protein_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Carbs: {item.food.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.food.fat_total_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Sugar: {item.food.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.food.fiber_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('supper', index)}>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('supper', item.id)}>
                                         <MaterialCommunityIcons name="trash-can-outline" size={20} />
                                     </Pressable>
                                 </DataTable.Row>
@@ -416,27 +433,27 @@ export default () => {
                 >
                     <AddFood onClick={onClick} meal="snacks" />
 
-                    {snacks.map((item, index) => (
-                        <List.Accordion title={item.name + ' (' + item.calories + ' kcal)'} key={index} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
+                    {snacks.map((item) => (
+                        <List.Accordion title={item.food.name + ' (' + item.food.calories + ' kcal)'} key={item.id} left={props => <List.Icon {...props} icon="check" />} style={styles.cardBackground} theme={{ colors: { primary: colors.primary } }}>
                             <DataTable>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Name: {item.name}</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Serving: {item.serving_size_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Name: {item.food.name}</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Serving: {item.food.serving_size_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Calories: {item.calories} kcal</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Protein: {item.protein_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Calories: {item.food.calories} kcal</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Protein: {item.food.protein_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Carbs: {item.carbohydrates_total_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fat: {item.fat_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Carbs: {item.food.carbohydrates_total_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fat: {item.food.fat_total_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <DataTable.Cell><Text>Sugar: {item.sugar_g} g</Text></DataTable.Cell>
-                                    <DataTable.Cell><Text>Fiber: {item.fiber_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Sugar: {item.food.sugar_g} g</Text></DataTable.Cell>
+                                    <DataTable.Cell><Text>Fiber: {item.food.fiber_g} g</Text></DataTable.Cell>
                                 </DataTable.Row>
                                 <DataTable.Row>
-                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('snacks', index)}>
+                                    <Pressable style={styles.button2} title="Delete" onPress={() => deleteFoodItem('snacks', item.id)}>
                                         <MaterialCommunityIcons name="trash-can-outline" size={20} />
                                     </Pressable>
                                 </DataTable.Row>
